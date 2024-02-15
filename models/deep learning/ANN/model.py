@@ -2,15 +2,16 @@
 
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
+from keras.regularizers import l2
 
 
 def build_model(input_shape):
     model = Sequential([
-        Dense(256, activation='relu', input_shape=(input_shape,)),
-        Dropout(0.5),
-        Dense(128, activation='relu'),
+        Dense(128, activation='relu', kernel_regularizer=l2(0.001), input_shape=(input_shape,)),
         Dropout(0.5),
         Dense(64, activation='relu'),
+        Dropout(0.5),
+        Dense(32, activation='relu'),
         Dense(6, activation='softmax')  # 6 emotions
     ])
 
