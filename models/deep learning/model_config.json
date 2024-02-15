@@ -1,0 +1,9 @@
+{
+  "layers": [
+    {"type": "Dense", "units": 256, "activation": "relu"},
+    {"type": "Dropout", "rate": 0.5},
+    {"type": "Dense", "units": "dynamic", "activation": "softmax"}
+  ],
+  "epochs": 50,
+  "batch_size": 32
+}
