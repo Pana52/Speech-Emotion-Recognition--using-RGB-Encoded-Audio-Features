@@ -45,8 +45,7 @@ def train_and_evaluate(model, X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/dataset/CREMAD"
+    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/"
     X_train, X_test, y_train, y_test = load_data(data_path)
     model = build_model(X_train.shape[1])
     train_and_evaluate(model, X_train, X_test, y_train, y_test)
