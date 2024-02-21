@@ -1,98 +1,108 @@
-import os
 import librosa
 import numpy as np
+import os
 from sklearn.model_selection import train_test_split
-from torch.utils.data import Dataset, DataLoader
-import torch
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 
-# Path to the CREMA-D dataset
-DATASET_PATH = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/'
-# Emotion categories
-EMOTIONS = ["ANG", "DIS", "FEA", "HAP", "NEU", "SAD"]
-
-
-def add_random_noise(signal, noise_level=0.005):
-    noise = np.random.randn(len(signal))
-    augmented_signal = signal + noise_level * noise
-    # Ensure the signal is in the same range
-    augmented_signal = augmented_signal.astype(type(signal[0]))
-    return augmented_signal
+# Constants
+SAMPLE_RATE = 22050
+MFCC_NUM = 13
+TRACK_DURATION = 3  # Measured in seconds
+SAMPLES_PER_TRACK = SAMPLE_RATE * TRACK_DURATION
+N_MELS = 40  # Number of Mel bands to generate
 
 
-def pad_mfcc(mfcc, max_len=216):
-    """
-    Pads or truncates the MFCC array to a fixed length.
+# Augmentation functions as previously defined
+def add_noise(data, noise_level=0.005):
+    noise = np.random.randn(len(data))
+    augmented_data = data + noise_level * noise
+    return augmented_data
 
-    Parameters:
-    - mfcc: The MFCC array to pad.
-    - max_len: The target length to pad or truncate to.
 
-    Returns:
-    - The padded or truncated MFCC array.
-    """
-    pad_width = max_len - mfcc.shape[1]
-    if pad_width > 0:
-        # Pad the array if it is shorter than the max_len
-        mfcc = np.pad(mfcc, pad_width=((0, 0), (0, pad_width)), mode='constant')
+def time_shift(data, sampling_rate, shift_max=0.2, shift_direction='both'):
+    shift = np.random.randint(int(sampling_rate * shift_max))
+    if shift_direction == 'right':
+        shift = -shift
+    elif shift_direction == 'both':
+        direction = np.random.randint(0, 2)
+        if direction == 1:
+            shift = -shift
+    augmented_data = np.roll(data, shift)
+    if shift > 0:
+        augmented_data[:shift] = 0
     else:
-        # Truncate the array if it is longer than the max_len
-        mfcc = mfcc[:, :max_len]
-    return mfcc
+        augmented_data[shift:] = 0
+    return augmented_data
 
 
-def load_data(dataset_path=DATASET_PATH, emotions=EMOTIONS, max_len=216, augment=False, augment_probability=0.5):
-    X, y = [], []
+def pitch_shift(data, sampling_rate, n_steps=0.7):
+    return librosa.effects.pitch_shift(data, sr=sampling_rate, n_steps=n_steps)
+
+
+def change_speed(data, speed_factor=0.9):
+    return librosa.effects.time_stretch(data, rate=speed_factor)
+
+
+# Extract features with optional augmentation
+def extract_features(file_path, sr=22050, augment=False, duration=3):
+    audio, sample_rate = librosa.load(file_path, sr=sr, duration=duration)
+    # Ensuring minimum audio length
+    if len(audio) < sr * duration:
+        pad_len = sr * duration - len(audio)
+        audio = np.pad(audio, (0, pad_len), 'constant')
+
+    if augment:
+        # Apply augmentations randomly
+        if np.random.rand() < 0.5:
+            audio = add_noise(audio)
+        if np.random.rand() < 0.5:
+            audio = time_shift(audio, sampling_rate=sr)
+        if np.random.rand() < 0.5:
+            audio = pitch_shift(audio, sampling_rate=sr)
+        if np.random.rand() < 0.5:
+            audio = change_speed(audio)
+
+    # Feature extraction
+    # Adjust these feature extraction steps based on the features you want to include
+    mfccs = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=13)
+    chroma = librosa.feature.chroma_stft(y=audio, sr=sr)
+    mel_spec = librosa.feature.melspectrogram(y=audio, sr=sr)
+    spectral_contrast = librosa.feature.spectral_contrast(y=audio, sr=sr)
+
+    mfccs_processed = np.mean(mfccs.T, axis=0)
+    chroma_processed = np.mean(chroma.T, axis=0)
+    mel_spec_processed = np.mean(librosa.power_to_db(mel_spec), axis=1)
+    spectral_contrast_processed = np.mean(spectral_contrast, axis=1)
+
+    # Combine all features
+    features = np.hstack((mfccs_processed, chroma_processed, mel_spec_processed, spectral_contrast_processed))
+    return features
+
+
+def load_data(data_path):
+    labels = []
+    features = []
+
+    emotions = ['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD']
     for emotion in emotions:
-        emotion_path = os.path.join(dataset_path, emotion)
+        emotion_path = os.path.join(data_path, emotion)
         for filename in os.listdir(emotion_path):
-            if not filename.lower().endswith(('.wav', '.mp3', '.flac')):
-                continue
             file_path = os.path.join(emotion_path, filename)
-            try:
-                signal, sr = librosa.load(file_path)
-                # Apply augmentation with a certain probability
-                if augment and np.random.rand() < augment_probability:
-                    signal = add_random_noise(signal)
-                mfcc = librosa.feature.mfcc(y=signal, sr=sr, n_mfcc=13)
-                mfcc = pad_mfcc(mfcc, max_len=max_len)
-                X.append(mfcc)
-                y.append(emotions.index(emotion))
-            except Exception as e:
-                print(f"Error loading {file_path}: {e}")
-    X = np.stack(X)
-    y = np.array(y)
-    return X, y
+            if file_path.endswith('.wav'):
+                features.append(extract_features(file_path))
+                labels.append(emotion)
 
+    # Encode labels
+    le = LabelEncoder()
+    labels_encoded = le.fit_transform(labels)
 
-def preprocess_data(X, y, test_size=0.2, validation_size=0.2):
-    # Split data into training and testing
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-    # Split training data into training and validation
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=validation_size, random_state=42)
-    return X_train, X_val, X_test, y_train, y_val, y_test
+    # Split the dataset
+    X_train, X_test, y_train, y_test = train_test_split(np.array(features), labels_encoded, test_size=0.2,
+                                                        random_state=42)
 
+    # Scale features
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
-class AudioDataset(Dataset):
-    def __init__(self, X, y):
-        self.X = X
-        self.y = y
-
-    def __len__(self):
-        return len(self.X)
-
-    def __getitem__(self, idx):
-        # Reshape the MFCC features to add a channel dimension
-        mfcc_features = np.expand_dims(self.X[idx], axis=0)
-        return torch.tensor(mfcc_features, dtype=torch.float32), torch.tensor(self.y[idx], dtype=torch.int64)
-
-
-def get_dataloaders(batch_size=32, max_len=216, augment=False):
-    X, y = load_data(DATASET_PATH, max_len=max_len, augment=augment)
-    X_train, X_val, X_test, y_train, y_val, y_test = preprocess_data(X, y)
-
-    # Convert datasets into DataLoader
-    train_loader = DataLoader(AudioDataset(X_train, y_train), batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(AudioDataset(X_val, y_val), batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(AudioDataset(X_test, y_test), batch_size=batch_size, shuffle=False)
-
-    return train_loader, val_loader, test_loader
+    return X_train, X_test, y_train, y_test

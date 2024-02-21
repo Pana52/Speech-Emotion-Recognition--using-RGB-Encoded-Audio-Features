@@ -1,22 +1,20 @@
+# model.py
 from keras.models import Sequential
-from keras.layers import LSTM, Dense, Dropout, Masking, Embedding
+from keras.layers import LSTM, Dense, Dropout, BatchNormalization, InputLayer
 
 
-def create_model(input_shape, num_classes):
+def build_rnn_lstm_model(input_shape, num_classes):
     model = Sequential([
-        # Masking layer to handle different input sequence lengths
-        Masking(mask_value=0., input_shape=input_shape),
-        # LSTM layer
-        LSTM(64, return_sequences=False),
+        InputLayer(input_shape=input_shape),
+        LSTM(128, return_sequences=True),
+        BatchNormalization(),
+        Dropout(0.5),
+        LSTM(128),
+        BatchNormalization(),
         Dropout(0.5),
         Dense(64, activation='relu'),
         Dropout(0.5),
-        # Output layer
         Dense(num_classes, activation='softmax')
     ])
-
-    model.compile(optimizer='adam',
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
 
     return model

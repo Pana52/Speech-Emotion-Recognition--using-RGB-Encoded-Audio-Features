@@ -1,46 +1,37 @@
-from preprocessing import get_data
-from model import create_model
-from keras.callbacks import EarlyStopping
-from sklearn.metrics import classification_report, confusion_matrix
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+from preprocessing import load_data
+from model import create_model
+from keras.utils import to_categorical
 
+# Path to your dataset
 data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/'
-# Load and preprocess the data
-X_train, X_test, y_train, y_test = get_data(data_path)
 
-# Assuming the shape of your features is (None, 40) and you have 6 classes
-model = create_model((X_train.shape[1], 1), 6)
+# Load the data
+X_train, X_test, y_train, y_test = load_data(data_path)
 
-# Reshape features for Conv1D
-X_train = np.expand_dims(X_train, -1)
-X_test = np.expand_dims(X_test, -1)
+# One-hot encode labels
+num_classes = len(np.unique(y_train))
+y_train = to_categorical(y_train, num_classes)
+y_test = to_categorical(y_test, num_classes)
 
-# Early Stopping
-early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+# Assuming that all our features have the same shape
+input_shape = (X_train.shape[1], 1)  # CNNs require a 3D input shape (batch_size, steps, input_dim)
+
+# Reshape the training data to fit the model input shape
+X_train = np.expand_dims(X_train, axis=2)
+X_test = np.expand_dims(X_test, axis=2)
+
+# Create the model
+model = create_model(input_shape=input_shape, num_classes=num_classes)
 
 # Train the model
-history = model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=100, batch_size=32, callbacks=[early_stopping])
+epochs = 50  # You can adjust this
+batch_size = 32  # You can adjust this
+model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_data=(X_test, y_test))
 
 # Evaluate the model
-loss, accuracy = model.evaluate(X_test, y_test, verbose=0)
-print(f'Test Loss: {loss:.4f}, Test Accuracy: {accuracy:.4f}')
+score = model.evaluate(X_test, y_test, verbose=0)
+print(f'Test loss: {score[0]} / Test accuracy: {score[1]}')
 
-# Predictions for metrics and confusion matrix
-y_pred = model.predict(X_test)
-y_pred_classes = np.argmax(y_pred, axis=1)
-y_true_classes = np.argmax(y_test, axis=1)
-
-# Classification report
-print(classification_report(y_true_classes, y_pred_classes, target_names=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD']))
-
-# Confusion matrix
-cm = confusion_matrix(y_true_classes, y_pred_classes)
-plt.figure(figsize=(8, 6))
-sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD'],
-                                                    yticklabels=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD'])
-plt.xlabel('Predicted labels')
-plt.ylabel('True labels')
-plt.title('Confusion Matrix')
-plt.show()
+# Save the model
+model.save('emotion_recognition_model.h5')

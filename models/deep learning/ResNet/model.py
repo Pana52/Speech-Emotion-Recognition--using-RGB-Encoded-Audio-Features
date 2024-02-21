@@ -1,21 +1,44 @@
-import torch.nn as nn
-from torchvision import models
-from torchvision.models.resnet import resnet18, ResNet18_Weights
+# model.py
+from keras.models import Model
+from keras.layers import Input, Conv1D, BatchNormalization, Activation, Add, MaxPooling1D, GlobalAveragePooling1D, Dense
+from keras.regularizers import l2
 
 
-class ResNetAudio(nn.Module):
-    def __init__(self, num_classes=6):
-        super(ResNetAudio, self).__init__()
-        # Load a pre-trained ResNet with updated weight loading method
-        self.resnet = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
-        self.resnet.conv1 = nn.Conv2d(1, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
-        num_ftrs = self.resnet.fc.in_features
-        self.resnet.fc = nn.Linear(num_ftrs, num_classes)
+def residual_block(x, filters, kernel_size=3, stride=1):
+    """A standard residual block."""
+    shortcut = x
 
-    def forward(self, x):
-        return self.resnet(x)
+    # Main Path
+    x = Conv1D(filters, kernel_size=kernel_size, strides=stride, padding='same', kernel_regularizer=l2(1e-4))(x)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+
+    x = Conv1D(filters, kernel_size=kernel_size, strides=1, padding='same', kernel_regularizer=l2(1e-4))(x)
+    x = BatchNormalization()(x)
+
+    # Shortcut Path
+    if stride != 1:
+        shortcut = Conv1D(filters, kernel_size=1, strides=stride, padding='same', kernel_regularizer=l2(1e-4))(shortcut)
+        shortcut = BatchNormalization()(shortcut)
+
+    x = Add()([x, shortcut])
+    x = Activation('relu')(x)
+    return x
 
 
-def initialize_model(num_classes=6):
-    model = ResNetAudio(num_classes=num_classes)
+def build_resnet(input_shape, num_classes):
+    inputs = Input(shape=input_shape)
+    x = Conv1D(64, 7, strides=2, padding='same', kernel_regularizer=l2(1e-4))(inputs)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+    x = MaxPooling1D(pool_size=3, strides=2, padding='same')(x)
+
+    # Residual blocks
+    for filters in [64, 128, 256, 512]:
+        x = residual_block(x, filters=filters, stride=2)
+
+    x = GlobalAveragePooling1D()(x)
+    outputs = Dense(num_classes, activation='softmax')(x)
+
+    model = Model(inputs=inputs, outputs=outputs)
     return model
