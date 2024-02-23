@@ -9,3 +9,5 @@ torch~=2.2.0
 torchvision~=0.17.0
 resampy~=0.4.2
 hmmlearn~=0.3.0
+joblib~=1.3.2
+sns~=0.1
