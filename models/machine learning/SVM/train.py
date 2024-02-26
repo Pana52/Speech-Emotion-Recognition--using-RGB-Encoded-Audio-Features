@@ -1,4 +1,4 @@
-from preprocessing_CREMAD import load_data
+from preprocessing_RAVDESS import load_data
 from model import create_model
 from sklearn.metrics import classification_report, accuracy_score
 
@@ -33,5 +33,5 @@ def train_and_evaluate(data_path):
 if __name__ == "__main__":
     # Specify the path to your CREMA-D dataset
     dataset_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                   "KV6003BNN01/datasets/CREMAD/"
+                   "KV6003BNN01/datasets/RAVDESS/"
     train_and_evaluate(dataset_path)

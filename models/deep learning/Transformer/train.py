@@ -1,5 +1,6 @@
+from preprocessing_RAVDESS import load_data
+
 import numpy as np
-from preprocessing_CREMAD import load_data
 from model import build_transformer_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.metrics import classification_report, confusion_matrix
@@ -8,7 +9,7 @@ import seaborn as sns
 
 # Load preprocessed data
 X_train, X_test, y_train, y_test = load_data("C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing "
-                                             "Project KV6003BNN01/datasets/CREMAD/")
+                                             "Project KV6003BNN01/datasets/RAVDESS/")
 
 # Assuming X_train.shape[1] gives the feature vector length
 input_shape = X_train.shape[1]

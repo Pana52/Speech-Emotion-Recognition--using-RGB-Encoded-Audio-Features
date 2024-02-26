@@ -1,5 +1,7 @@
-# train.py
+# Change this depending on your dataset
 from preprocessing_CREMAD import load_data
+
+# Libraries
 from model import build_model
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 import matplotlib.pyplot as plt
@@ -17,7 +19,7 @@ def train_and_evaluate(model, X_train, X_test, y_train, y_test):
     history = model.fit(
         X_train, y_train,
         validation_data=(X_test, y_test),
-        epochs=500,  # You might adjust this depending on the callback behavior
+        epochs=20,  # You might adjust this depending on the callback behavior
         batch_size=32,
         callbacks=[checkpoint, early_stopping]
     )

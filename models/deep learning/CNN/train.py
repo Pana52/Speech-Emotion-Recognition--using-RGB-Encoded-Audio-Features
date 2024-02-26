@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from preprocessing_CREMAD import load_data
+from preprocessing_RAVDESS import load_data
 from model import create_model
 from keras.utils import to_categorical
 from sklearn.metrics import classification_report, confusion_matrix
@@ -9,7 +9,7 @@ from keras.models import load_model
 from keras.callbacks import EarlyStopping
 
 # Path to your dataset
-data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/'
+data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/RAVDESS/'
 
 # Load the data
 X_train, X_test, y_train, y_test = load_data(data_path)

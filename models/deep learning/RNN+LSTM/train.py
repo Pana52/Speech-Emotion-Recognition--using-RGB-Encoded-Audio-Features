@@ -1,19 +1,21 @@
+from preprocessing_RAVDESS import load_data
+
 import numpy as np
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from matplotlib import pyplot as plt
 import seaborn as sns  # Corrected import statement
 from sklearn.metrics import confusion_matrix, classification_report
-from preprocessing_CREMAD import load_data
 from model import build_rnn_lstm_model
 
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/"
+DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/RAVDESS/"
 INPUT_SHAPE = (None, 1)  # Adjust this based on your extracted features dimension
-NUM_CLASSES = 6  # Number of emotion categories
+NUM_CLASSES = 8  # Number of emotion categories
 EPOCHS = 100
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
+
 
 def main():
     # Load and preprocess the dataset
@@ -61,6 +63,7 @@ def main():
     plt.ylabel('True Label')
     plt.title('Confusion Matrix')
     plt.show()
+
 
 if __name__ == '__main__':
     main()

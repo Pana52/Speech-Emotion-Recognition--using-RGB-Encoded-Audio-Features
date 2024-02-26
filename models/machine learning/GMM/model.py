@@ -1,7 +1,7 @@
 from sklearn.mixture import GaussianMixture
 
 
-def create_gmm_models(n_components=16, n_classes=6):
+def create_gmm_models(n_components=16, n_classes=8):
     """
     Creates a dictionary of Gaussian Mixture Models, one for each class.
 
