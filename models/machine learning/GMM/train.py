@@ -1,5 +1,5 @@
 import numpy as np
-from preprocessing import load_data
+from preprocessing_CREMAD import load_data
 from model import create_gmm_models
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split

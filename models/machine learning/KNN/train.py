@@ -1,5 +1,5 @@
 # train.py
-from preprocessing import load_data
+from preprocessing_CREMAD import load_data
 from model import KNNModel
 
 # Assuming the CREMA-D dataset is located in 'data/CREMA-D' directory
