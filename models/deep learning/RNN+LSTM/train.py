@@ -1,4 +1,4 @@
-from preprocessing_SAVEE import load_data
+from preprocessing_EMODB import load_data
 
 import numpy as np
 from keras.optimizers import Adam
@@ -9,7 +9,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 from model import build_rnn_lstm_model
 
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
+DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/"
 INPUT_SHAPE = (None, 1)  # Adjust this based on your extracted features dimension
 NUM_CLASSES = 7  # Number of emotion categories
 EPOCHS = 100

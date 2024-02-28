@@ -1,5 +1,5 @@
 # train_CREMAD.py - Extended with evaluation
-from preprocessing_SAVEE import load_data
+from preprocessing_EMODB import load_data
 
 from model import create_hmm_model
 import numpy as np
@@ -33,5 +33,5 @@ def train_model(data_path):
 
 if __name__ == "__main__":
     data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/SAVEE/"
+                "KV6003BNN01/datasets/EMODB/"
     train_model(data_path)

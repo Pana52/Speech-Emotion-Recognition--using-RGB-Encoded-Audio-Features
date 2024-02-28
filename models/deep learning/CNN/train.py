@@ -1,4 +1,4 @@
-from preprocessing_SAVEE import load_data
+from preprocessing_EMODB import load_data
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ from keras.models import load_model
 from keras.callbacks import EarlyStopping
 
 # Path to your dataset
-data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/'
+data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/'
 
 # Load the data
 X_train, X_test, y_train, y_test = load_data(data_path)

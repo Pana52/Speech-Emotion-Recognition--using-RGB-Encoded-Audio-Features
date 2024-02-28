@@ -1,4 +1,4 @@
-from preprocessing_SAVEE import load_data
+from preprocessing_EMODB import load_data
 from model import create_model
 from sklearn.metrics import classification_report
 import joblib
@@ -7,7 +7,7 @@ import joblib
 def train_and_evaluate():
     # Load and preprocess data
     data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/SAVEE/"
+                "KV6003BNN01/datasets/EMODB/"
     X_train, X_test, y_train, y_test = load_data(data_path)
 
     # Create model

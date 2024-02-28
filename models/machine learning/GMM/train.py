@@ -1,10 +1,10 @@
 import numpy as np
-from preprocessing_SAVEE import load_data, EMOTIONS
+from preprocessing_EMODB import load_data
 from model import create_gmm_models
 from sklearn.metrics import classification_report
 
 # Path to the dataset
-dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/'
+dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/'
 
 # Load the dataset
 X_train, X_test, y_train, y_test = load_data(dataset_path)
@@ -30,4 +30,4 @@ for X_test_instance in X_test:
 
 # Evaluate the performance
 print("Classification Report:")
-print(classification_report(y_test, predictions, target_names=[EMOTIONS[key] for key in sorted(EMOTIONS.keys())]))
+print(classification_report(y_test, predictions))
