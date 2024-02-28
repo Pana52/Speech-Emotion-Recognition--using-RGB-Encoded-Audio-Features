@@ -1,4 +1,4 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 
 from model import create_model
 import numpy as np
@@ -13,8 +13,7 @@ from keras.models import load_model
 
 def main():
     # Define the path to your dataset
-    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/RAVDESS/"
+    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
 
     # Load and preprocess the data
     X_train, X_test, y_train, y_test = load_data(data_path)

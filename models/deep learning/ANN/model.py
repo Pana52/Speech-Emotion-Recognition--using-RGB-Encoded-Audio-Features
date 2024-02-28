@@ -11,7 +11,7 @@ def build_model(input_shape):
         Dense(64, activation='relu'),
         Dropout(0.5),
         Dense(32, activation='relu'),
-        Dense(6, activation='softmax')  # ADJUST THE NUMBER OF CLASSES HERE!
+        Dense(7, activation='softmax')  # ADJUST THE NUMBER OF CLASSES HERE!
     ])
 
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])

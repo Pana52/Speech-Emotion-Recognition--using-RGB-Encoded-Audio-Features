@@ -1,15 +1,10 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 from model import create_model
 from sklearn.metrics import classification_report, accuracy_score
 
 
 def train_and_evaluate(data_path):
-    """
-    Load the data, train the SVM model, and evaluate its performance.
 
-    Parameters:
-    - data_path: The path to the dataset directory.
-    """
     # Load and preprocess the data
     X_train, X_test, y_train, y_test = load_data(data_path)
 
@@ -33,5 +28,5 @@ def train_and_evaluate(data_path):
 if __name__ == "__main__":
     # Specify the path to your CREMA-D dataset
     dataset_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                   "KV6003BNN01/datasets/RAVDESS/"
+                   "KV6003BNN01/datasets/SAVEE/"
     train_and_evaluate(dataset_path)

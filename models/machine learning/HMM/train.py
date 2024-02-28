@@ -1,5 +1,6 @@
 # train_CREMAD.py - Extended with evaluation
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
+
 from model import create_hmm_model
 import numpy as np
 from sklearn.metrics import accuracy_score, classification_report
@@ -32,5 +33,5 @@ def train_model(data_path):
 
 if __name__ == "__main__":
     data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/RAVDESS/"
+                "KV6003BNN01/datasets/SAVEE/"
     train_model(data_path)

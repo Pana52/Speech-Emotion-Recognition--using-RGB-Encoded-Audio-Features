@@ -1,4 +1,4 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 
 import numpy as np
 from keras.optimizers import Adam
@@ -9,9 +9,9 @@ from sklearn.metrics import confusion_matrix, classification_report
 from model import build_rnn_lstm_model
 
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/RAVDESS/"
+DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
 INPUT_SHAPE = (None, 1)  # Adjust this based on your extracted features dimension
-NUM_CLASSES = 8  # Number of emotion categories
+NUM_CLASSES = 7  # Number of emotion categories
 EPOCHS = 100
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001

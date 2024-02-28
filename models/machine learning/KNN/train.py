@@ -1,9 +1,9 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 from model import KNNModel
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 # Assuming the CREMA-D dataset is located in 'data/CREMA-D' directory
-data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/RAVDESS/"
+data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
 
 
 def main():
@@ -26,8 +26,7 @@ def main():
     # print(classification_report(y_test, y_pred, target_names=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD']))
 
     #RAVDESS
-    print(classification_report(y_test, y_pred, target_names=['neutral', 'calm', 'happy', 'sad', 'angry', 'fearful',
-                                                              'disgust', 'surprised']))
+    print(classification_report(y_test, y_pred))
     # Confusion Matrix
     print("Confusion Matrix:")
     print(confusion_matrix(y_test, y_pred))

@@ -2,7 +2,7 @@
 from hmmlearn import hmm
 
 
-def create_hmm_model(n_components=8):
+def create_hmm_model(n_components=7):
     """
     Creates and returns a Hidden Markov Model.
 

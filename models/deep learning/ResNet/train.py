@@ -1,4 +1,4 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 
 import numpy as np
 from keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -9,9 +9,9 @@ from model import build_resnet
 import seaborn as sns  # Corrected import statement for seaborn
 
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/RAVDESS/"
+DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
 INPUT_SHAPE = (13, 1)  # Adjust this to match the feature dimension of your data
-NUM_CLASSES = 8  # Number of emotion categories
+NUM_CLASSES = 7  # Number of emotion categories
 EPOCHS = 100
 BATCH_SIZE = 32
 

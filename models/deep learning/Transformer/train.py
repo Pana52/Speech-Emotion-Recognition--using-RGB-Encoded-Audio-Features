@@ -1,4 +1,4 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 
 import numpy as np
 from model import build_transformer_model
@@ -9,7 +9,7 @@ import seaborn as sns
 
 # Load preprocessed data
 X_train, X_test, y_train, y_test = load_data("C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing "
-                                             "Project KV6003BNN01/datasets/RAVDESS/")
+                                             "Project KV6003BNN01/datasets/SAVEE/")
 
 # Assuming X_train.shape[1] gives the feature vector length
 input_shape = X_train.shape[1]

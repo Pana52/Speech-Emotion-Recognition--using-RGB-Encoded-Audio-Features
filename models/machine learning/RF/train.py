@@ -1,4 +1,4 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 from model import create_model
 from sklearn.metrics import classification_report
 import joblib
@@ -7,7 +7,7 @@ import joblib
 def train_and_evaluate():
     # Load and preprocess data
     data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/RAVDESS/"
+                "KV6003BNN01/datasets/SAVEE/"
     X_train, X_test, y_train, y_test = load_data(data_path)
 
     # Create model
