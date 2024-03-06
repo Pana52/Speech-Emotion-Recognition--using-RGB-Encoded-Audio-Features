@@ -1,4 +1,4 @@
-from preprocessing_EMODB import load_data
+from preprocessing_RAVDESS import load_data
 
 import numpy as np
 from keras.optimizers import Adam
@@ -9,10 +9,11 @@ from sklearn.metrics import confusion_matrix, classification_report
 from model import build_rnn_lstm_model
 
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/"
-INPUT_SHAPE = (None, 1)  # Adjust this based on your extracted features dimension
-NUM_CLASSES = 7  # Number of emotion categories
-EPOCHS = 100
+DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/RAVDESS/"
+# INPUT_SHAPE = (none, 1)  # MFCC
+INPUT_SHAPE = (128, 1)  # MELSPEC
+NUM_CLASSES = 10  # Number of emotion categories
+EPOCHS = 500
 BATCH_SIZE = 32
 LEARNING_RATE = 0.001
 
@@ -35,7 +36,7 @@ def main():
                   metrics=['accuracy'])
 
     # Callbacks
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=25, verbose=1)
     model_checkpoint = ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss', mode='min')
 
     # Train the model

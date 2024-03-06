@@ -1,4 +1,4 @@
-from preprocessing_EMODB import load_data
+from preprocessing_SAVEE import load_data
 
 import numpy as np
 from keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -9,10 +9,11 @@ from model import build_resnet
 import seaborn as sns  # Corrected import statement for seaborn
 
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/"
-INPUT_SHAPE = (13, 1)  # Adjust this to match the feature dimension of your data
-NUM_CLASSES = 7  # Number of emotion categories
-EPOCHS = 100
+DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
+# INPUT_SHAPE = (13, 1)  # MFCC
+INPUT_SHAPE = (128, 1)  # MELSPEC
+NUM_CLASSES = 10  # Number of emotion categories
+EPOCHS = 500
 BATCH_SIZE = 32
 
 
@@ -35,7 +36,7 @@ def main():
 
     # Callbacks
     checkpoint = ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss', mode='min')
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='min')
+    early_stopping = EarlyStopping(monitor='val_loss', patience=50, verbose=1, mode='min')
 
     # Train the model
     history = model.fit(X_train, y_train,
