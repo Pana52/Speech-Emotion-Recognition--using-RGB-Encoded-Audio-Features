@@ -1,5 +1,5 @@
 # Change this depending on your dataset
-from preprocessing_EMODB import load_data
+from preprocessing_SAVEE import load_data
 
 # Libraries
 from model import build_model
@@ -13,13 +13,13 @@ import numpy as np
 def train_and_evaluate(model, X_train, X_test, y_train, y_test):
     # Define callbacks
     checkpoint = ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss', mode='min')
-    early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=50, restore_best_weights=True)
 
     # Train the model
     history = model.fit(
         X_train, y_train,
         validation_data=(X_test, y_test),
-        epochs=20,  # You might adjust this depending on the callback behavior
+        epochs=500,  # You might adjust this depending on the callback behavior
         batch_size=32,
         callbacks=[checkpoint, early_stopping]
     )
@@ -55,7 +55,8 @@ def train_and_evaluate(model, X_train, X_test, y_train, y_test):
 
 
 if __name__ == "__main__":
-    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/"
+    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
+                "KV6003BNN01/datasets/SAVEE/"
     X_train, X_test, y_train, y_test = load_data(data_path)
     model = build_model(X_train.shape[1])
     train_and_evaluate(model, X_train, X_test, y_train, y_test)
