@@ -1,4 +1,4 @@
-from preprocessing_EMODB import load_data
+from preprocessing_SAVEE import load_data
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -10,7 +10,7 @@ from keras.models import load_model
 from keras.callbacks import EarlyStopping
 
 # Path to your dataset
-data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/'
+data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/'
 
 # Load the data
 X_train, X_test, y_train, y_test = load_data(data_path)
@@ -31,10 +31,10 @@ X_test = np.expand_dims(X_test, axis=2)
 model = create_model(input_shape=input_shape, num_classes=num_classes)
 
 # Setup Early Stopping
-early_stopping = EarlyStopping(monitor='val_loss', patience=10, verbose=1, mode='min', restore_best_weights=True)
+early_stopping = EarlyStopping(monitor='val_loss', patience=50, verbose=1, mode='min', restore_best_weights=True)
 
 # Train the model with Early Stopping
-epochs = 50  # You can adjust this
+epochs = 500  # You can adjust this
 batch_size = 32  # You can adjust this
 history = model.fit(X_train, y_train_encoded, epochs=epochs, batch_size=batch_size, validation_data=(X_test, y_test_encoded), callbacks=[early_stopping])
 

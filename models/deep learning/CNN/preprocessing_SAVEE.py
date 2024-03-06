@@ -29,11 +29,17 @@ def extract_features(file_path, sr=SAMPLE_RATE, n_mfcc=MFCC_NUM, track_duration=
         audio = np.pad(audio, (0, max(0, sr * track_duration - len(audio))), "constant")
     mfccs = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=n_mfcc)
     # Flatten the mfccs and ensure fixed size
-    mfccs = mfccs.T.flatten()  # Flatten the array
-    fixed_size_mfccs = np.zeros((expected_mfcc_features * n_mfcc,))
+    # mfccs = mfccs.T.flatten()  # Flatten the array
+
+    mfccs_processed = np.mean(mfccs.T, axis=0)
+
+    # fixed_size_mfccs = np.zeros((expected_mfcc_features * n_mfcc,))
     # Copy the extracted features to the fixed-size array (truncate if necessary)
-    fixed_size_mfccs[:min(mfccs.size, fixed_size_mfccs.size)] = mfccs[:min(mfccs.size, fixed_size_mfccs.size)]
-    return fixed_size_mfccs
+    # fixed_size_mfccs[:min(mfccs.size, fixed_size_mfccs.size)] = mfccs[:min(mfccs.size, fixed_size_mfccs.size)]
+
+    features = np.hstack(mfccs_processed)
+
+    return features
 
 
 def parse_filename(filename):
