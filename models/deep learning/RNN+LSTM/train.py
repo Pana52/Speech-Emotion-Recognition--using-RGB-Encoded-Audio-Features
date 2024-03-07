@@ -1,15 +1,16 @@
-from preprocessing_RAVDESS import load_data
+from preprocessing_SAVEE import load_data
 
 import numpy as np
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from matplotlib import pyplot as plt
-import seaborn as sns  # Corrected import statement
+import seaborn as sns
 from sklearn.metrics import confusion_matrix, classification_report
 from model import build_rnn_lstm_model
 
+
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/RAVDESS/"
+DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
 # INPUT_SHAPE = (none, 1)  # MFCC
 INPUT_SHAPE = (128, 1)  # MELSPEC
 NUM_CLASSES = 10  # Number of emotion categories
@@ -36,7 +37,7 @@ def main():
                   metrics=['accuracy'])
 
     # Callbacks
-    early_stopping = EarlyStopping(monitor='val_loss', patience=25, verbose=1)
+    early_stopping = EarlyStopping(monitor='val_loss', patience=50, verbose=1)
     model_checkpoint = ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss', mode='min')
 
     # Train the model
