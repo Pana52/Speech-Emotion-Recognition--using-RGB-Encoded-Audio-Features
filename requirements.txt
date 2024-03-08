@@ -14,3 +14,4 @@ sns~=0.1
 pandas~=2.0.3
 audformat~=1.1.2
 audeer~=2.0.0
+pillow~=10.2.0
