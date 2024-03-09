@@ -1,53 +1,61 @@
-from model import create_image_model
-from preprocessing import create_generators
-from keras.callbacks import ModelCheckpoint
-from sklearn.metrics import classification_report
 import numpy as np
+from keras.optimizers import Adam
+from keras.callbacks import EarlyStopping
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+from preprocessing import load_images_from_folder, preprocess_data, split_dataset, apply_augmentations
+from model import create_model
 
-# Define model parameters
-input_shape = (224, 224, 1)  # Example input shape, adjust based on your actual data
-num_classes = 6  # Update based on the actual number of classes in your dataset
-batch_size = 32
-epochs = 50
-
-
-def train_and_evaluate_model():
-    # Create data generators
-    train_generator, validation_generator, test_generator = create_generators(batch_size=batch_size)
-
-    # Initialize the model
-    model = create_image_model(input_shape, num_classes)
-
-    # Model checkpoint to save the best model
-    checkpoint_cb = ModelCheckpoint("best_model.h5", save_best_only=True)
-
-    # Training the model
-    model.fit(
-        train_generator,
-        steps_per_epoch=len(train_generator),
-        epochs=epochs,
-        validation_data=validation_generator,
-        validation_steps=len(validation_generator),
-        callbacks=[checkpoint_cb])
-
-    # Evaluate the model on the test set
-    model.evaluate(test_generator, steps=len(test_generator))
-
-    # Generate predictions for all samples in the test set and accumulate true labels
-    test_generator.reset()  # Ensure we're starting iteration from the beginning
-    predictions = model.predict(test_generator, steps=len(test_generator))
-    predicted_classes = np.argmax(predictions, axis=1)
-
-    # Get true labels from the generator
-    true_labels = test_generator.classes
-
-    # Ensure predicted_classes and true_labels are aligned
-    if len(predicted_classes) != len(true_labels):
-        true_labels = true_labels[:len(predicted_classes)]
-
-    # Generate and print classification report
-    print(classification_report(true_labels, predicted_classes, target_names=list(test_generator.class_indices.keys())))
+# Load and preprocess the dataset
+data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
+            'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
+            'images/datasets/EMODB/MELSPEC_100x100/'
+image_size = (100, 100)
+num_classes = 7
+batches = 32
+epochs = 100  # Adjust as needed
 
 
-if __name__ == "__main__":
-    train_and_evaluate_model()
+images, labels = load_images_from_folder(data_path, image_size=image_size)
+
+# Define your augmentations here
+augmentations = {
+    # 'horizontal_flip': True,
+    # 'rotation': 25,  # Rotate by up to 25 degrees
+    # 'noise': 0.02,   # Add Gaussian noise
+    # 'brightness': 0.2,  # Adjust brightness
+    # 'shear': 5  # Shear by 5 degrees
+}
+
+# Apply augmentations
+# images_augmented = apply_augmentations(images, augmentations=augmentations)
+
+# Continue with your preprocessing
+# images_augmented, labels = preprocess_data(images_augmented, labels)
+# X_train, X_val, X_test, y_train, y_val, y_test = split_dataset(images_augmented, labels)
+
+images, labels = preprocess_data(images, labels)
+X_train, X_val, X_test, y_train, y_val, y_test = split_dataset(images, labels)
+
+# Adjust your model configuration if necessary to handle the new shape of features
+model = create_model(input_shape=(100, 100, 3), num_classes=num_classes)
+model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
+
+# Model training
+# early_stopping = EarlyStopping(monitor='val_loss', patience=50, restore_best_weights=True)
+history = model.fit(X_train, y_train, batch_size=batches, epochs=epochs, validation_data=(X_val, y_val))
+
+# Evaluate the model on the test set
+test_loss, test_acc = model.evaluate(X_test, y_test)
+print(f'Test Accuracy: {test_acc:.2f}')
+
+# Generate a classification report
+y_pred = model.predict(X_test, batch_size=32)
+y_pred_classes = np.argmax(y_pred, axis=1)
+y_true = np.argmax(y_test, axis=1)
+
+# CREMA-D
+# print(classification_report(y_true, y_pred_classes, target_names=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD']))
+
+# EMO-DB
+print(classification_report(y_true, y_pred_classes, target_names=['Anger', 'Boredom', 'Disgust', 'Fear', 'Happiness', 'Neutral', 'Sadness']))

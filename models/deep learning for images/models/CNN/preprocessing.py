@@ -1,74 +1,76 @@
-import numpy as np
-from keras.preprocessing.image import ImageDataGenerator
-from sklearn.model_selection import train_test_split
 import os
+import numpy as np
 from PIL import Image
+from sklearn.model_selection import train_test_split
+import pandas as pd  # For label encoding
+from skimage.transform import rotate, AffineTransform, warp
+from skimage.util import random_noise
+from skimage.exposure import adjust_gamma
+import random
 
-# Path to your dataset of Mel spectrogram images
-data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-            'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/CREMAD/MELSPEC_224x224/'
 
-
-def load_dataset(dataset_path):
+def load_images_from_folder(folder_path, image_size=(100, 100)):
     images = []
     labels = []
-    class_labels = {'ANG': 0, 'DIS': 1, 'FEA': 2, 'HAP': 3, 'NEU': 4, 'SAD': 5}  # Adjust as needed
-
-    for root, dirs, files in os.walk(dataset_path):
-        for file in files:
-            if file.endswith('.png'):  # Adjust the file format as needed
-                path = os.path.join(root, file)
-                img = Image.open(path).convert('L')  # 'L' for grayscale, 'RGB' for color
-                img = img.resize((224, 224))  # Adjust the target size as per your model's input
-                img_array = np.array(img)
-                images.append(img_array)
-
-                # Correctly extract label from the path
-                label_dir = os.path.basename(os.path.normpath(root))
-                try:
-                    label = class_labels[label_dir]
-                except KeyError:
-                    print(f"Label '{label_dir}' not found in class_labels dictionary.")
-                    continue  # Skip this file if its label is not in class_labels
-
-                labels.append(label)
-
-    images = np.array(images)
+    for label_dir in os.listdir(folder_path):
+        class_dir = os.path.join(folder_path, label_dir)
+        if not os.path.isdir(class_dir):
+            continue
+        for file in os.listdir(class_dir):
+            if file.endswith(".png"):
+                img_path = os.path.join(class_dir, file)
+                img = Image.open(img_path).convert('RGB')
+                img = img.resize(image_size)
+                img = np.array(img)
+                images.append(img)
+                labels.append(label_dir)
+    images = np.array(images, dtype='float32')
     labels = np.array(labels)
-
-    images = np.expand_dims(images, axis=-1)  # Add channel dimension for grayscale images
-    labels = np.eye(len(class_labels))[labels]  # One-hot encode labels
-
     return images, labels
 
 
-def load_data(dataset_path, test_size=0.2, val_size=0.2):
-    X, y = load_dataset(dataset_path)
-    X = X.astype('float32') / 255.0  # Normalize pixel values
-    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=test_size + val_size)
-    test_ratio = test_size / (test_size + val_size)
-    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=test_ratio)
-
-    return (X_train, y_train), (X_val, y_val), (X_test, y_test)
+def preprocess_data(X, y):
+    X = np.expand_dims(X, -1)  # Add channel dimension
+    X = X / 255.0  # Normalize images to [0, 1]
+    y = pd.get_dummies(y).values  # One-hot encode labels
+    return X, y
 
 
-def create_generators(batch_size=32):
-    datagen = ImageDataGenerator(
-        rescale=1. / 255,
-        rotation_range=20,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
-        shear_range=0.2,
-        zoom_range=0.2,
-        horizontal_flip=True,
-        fill_mode='nearest'
-    )
+def split_dataset(X, y, test_size=0.2, val_size=0.25):
+    # First split to get training and initial test set
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+    # Split training set to obtain a validation set
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_size, random_state=42)
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
-    (X_train, y_train), (X_val, y_val), (X_test, y_test) = load_data(data_path)
 
-    train_generator = datagen.flow(X_train, y_train, batch_size=batch_size)
-    validation_generator = datagen.flow(X_val, y_val, batch_size=batch_size)
-    test_generator = datagen.flow(X_test, y_test, batch_size=batch_size)
+def apply_augmentations(images, augmentations=None):
+    if augmentations is None:
+        augmentations = {}
 
-    return train_generator, validation_generator, test_generator
+    augmented_images = []
+    for img in images:
+        if augmentations.get('horizontal_flip', False) and random.choice([True, False]):
+            img = np.fliplr(img)
+
+        if augmentations.get('vertical_flip', False) and random.choice([True, False]):
+            img = np.flipud(img)
+
+        if 'rotation' in augmentations:
+            angle = random.uniform(-augmentations['rotation'], augmentations['rotation'])
+            img = rotate(img, angle, mode='edge')
+
+        if 'noise' in augmentations:
+            img = random_noise(img, mode='gaussian', var=augmentations['noise'] ** 2)
+
+        if 'brightness' in augmentations:
+            factor = random.uniform(1 - augmentations['brightness'], 1 + augmentations['brightness'])
+            img = adjust_gamma(img, gamma=factor, gain=1)
+
+        if 'shear' in augmentations:
+            af_transform = AffineTransform(shear=np.deg2rad(augmentations['shear']))
+            img = warp(img, inverse_map=af_transform)
+
+        augmented_images.append(img)
+
+    return np.array(augmented_images)

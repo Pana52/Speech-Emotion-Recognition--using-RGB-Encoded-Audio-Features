@@ -3,30 +3,38 @@ import librosa.display
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+from PIL import Image
 
 # Constants
 SAMPLE_RATE = 22050
-N_MELS = 128  # Adjust this if needed
+N_MELS = 128
 HOP_LENGTH = 512
 N_FFT = 2048
-IMAGE_SIZE = (224, 224)  # Target size for your images, adjust as needed
+IMAGE_SIZE = (100, 100)  # Target size for your images, adjust as needed
 
 
 def save_mel_spectrogram(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mels=N_MELS, hop_length=HOP_LENGTH,
                          n_fft=N_FFT):
-    """
-    Generates a Mel spectrogram from an audio file and saves it as an image.
-    """
     try:
         audio, sample_rate = librosa.load(file_path, sr=sr)
         S = librosa.feature.melspectrogram(y=audio, sr=sample_rate, n_mels=n_mels, hop_length=hop_length, n_fft=n_fft)
         S_DB = librosa.power_to_db(S, ref=np.max)
-        plt.figure(figsize=(IMAGE_SIZE[0] / 100, IMAGE_SIZE[1] / 100),
-                   dpi=100)  # Assuming 100 dpi to match the target size
+
+        # Create the figure
+        plt.figure(figsize=(IMAGE_SIZE[0] / 100, IMAGE_SIZE[1] / 100), dpi=100)
         librosa.display.specshow(S_DB, sr=sample_rate, hop_length=hop_length, x_axis='time', y_axis='mel')
         plt.axis('off')
-        plt.savefig(f"{output_dir}/{file_name}.png", bbox_inches='tight', pad_inches=0)
+
+        # Temporary save path
+        temp_save_path = f"{output_dir}/{file_name}.png"
+        plt.savefig(temp_save_path, bbox_inches='tight', pad_inches=0)
         plt.close()
+
+        # Resize the image to the desired output size using Image.Resampling.LANCZOS
+        img = Image.open(temp_save_path)
+        img_resized = img.resize(IMAGE_SIZE, Image.Resampling.LANCZOS)
+        img_resized.save(temp_save_path)
+
     except Exception as e:
         print(f"Error processing {file_name}: {e}")
 
@@ -54,6 +62,7 @@ def process_audio_files(data_path, output_dir):
 if __name__ == "__main__":
     # Define the path to your CREMA-D dataset and the output directory for the spectrogram images
     data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/'
-    output_dir = '/models/deep learning for images/models/CNN/CREMAD ' \
-                 'MELSPEC/'
+    output_dir = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
+                 'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset\models\deep learning for ' \
+                 'images/datasets/CREMAD/MELSPEC_100x100/'
     process_audio_files(data_path, output_dir)
