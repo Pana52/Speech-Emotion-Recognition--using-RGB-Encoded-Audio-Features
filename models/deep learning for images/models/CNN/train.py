@@ -9,9 +9,9 @@ from model import create_model
 # Load and preprocess the dataset
 data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
             'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/EMODB/MELSPEC_100x100/'
+            'images/datasets/RAVDESS/MELSPEC_100x100/'
 image_size = (100, 100)
-num_classes = 7
+num_classes = 8
 batches = 32
 epochs = 100  # Adjust as needed
 
@@ -19,13 +19,13 @@ epochs = 100  # Adjust as needed
 images, labels = load_images_from_folder(data_path, image_size=image_size)
 
 # Define your augmentations here
-augmentations = {
+# augmentations = {
     # 'horizontal_flip': True,
     # 'rotation': 25,  # Rotate by up to 25 degrees
     # 'noise': 0.02,   # Add Gaussian noise
     # 'brightness': 0.2,  # Adjust brightness
     # 'shear': 5  # Shear by 5 degrees
-}
+# }
 
 # Apply augmentations
 # images_augmented = apply_augmentations(images, augmentations=augmentations)
@@ -58,4 +58,7 @@ y_true = np.argmax(y_test, axis=1)
 # print(classification_report(y_true, y_pred_classes, target_names=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD']))
 
 # EMO-DB
-print(classification_report(y_true, y_pred_classes, target_names=['Anger', 'Boredom', 'Disgust', 'Fear', 'Happiness', 'Neutral', 'Sadness']))
+# print(classification_report(y_true, y_pred_classes, target_names=['Anger', 'Boredom', 'Disgust', 'Fear', 'Happiness', 'Neutral', 'Sadness']))
+
+# RAVDESS
+print(classification_report(y_true, y_pred_classes, target_names=['Neutral', 'Calm', 'Happy', 'Sad', 'Angry', 'Fearful', 'Disgust', 'Surprised']))

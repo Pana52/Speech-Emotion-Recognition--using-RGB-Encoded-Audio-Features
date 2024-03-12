@@ -2,7 +2,7 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 
 
-def create_model(input_shape=(100, 100, 3), num_classes=7):
+def create_model(input_shape=(100, 100, 3), num_classes=8):
     model = Sequential([
         Conv2D(32, (3, 3), activation='relu', padding='same', input_shape=input_shape),
         BatchNormalization(),
