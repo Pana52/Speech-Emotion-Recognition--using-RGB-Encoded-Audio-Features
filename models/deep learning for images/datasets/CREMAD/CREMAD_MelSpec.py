@@ -6,11 +6,11 @@ import os
 from PIL import Image
 
 # Constants
-SAMPLE_RATE = 22050
-N_MELS = 128
-HOP_LENGTH = 512
-N_FFT = 2048
-IMAGE_SIZE = (100, 100)  # Target size for your images, adjust as needed
+SAMPLE_RATE = 44100
+N_MELS = 256
+HOP_LENGTH = 128
+N_FFT = 4096
+IMAGE_SIZE = (512, 512)
 
 
 def save_mel_spectrogram(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mels=N_MELS, hop_length=HOP_LENGTH,
@@ -64,5 +64,5 @@ if __name__ == "__main__":
     data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/'
     output_dir = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                  'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset\models\deep learning for ' \
-                 'images/datasets/CREMAD/MELSPEC_100x100/'
+                 'images/datasets/CREMAD/MELSPEC_512x512/'
     process_audio_files(data_path, output_dir)
