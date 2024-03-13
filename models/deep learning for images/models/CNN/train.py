@@ -9,9 +9,9 @@ from model import create_model
 # Load and preprocess the dataset
 data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
             'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/RAVDESS/MELSPEC_100x100/'
+            'images/datasets/CREMAD/MELSPEC_100x100/'
 image_size = (100, 100)
-num_classes = 8
+num_classes = 6
 batches = 32
 epochs = 100  # Adjust as needed
 
@@ -55,10 +55,13 @@ y_pred_classes = np.argmax(y_pred, axis=1)
 y_true = np.argmax(y_test, axis=1)
 
 # CREMA-D
-# print(classification_report(y_true, y_pred_classes, target_names=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD']))
+print(classification_report(y_true, y_pred_classes, target_names=['ANG', 'DIS', 'FEA', 'HAP', 'NEU', 'SAD']))
 
 # EMO-DB
 # print(classification_report(y_true, y_pred_classes, target_names=['Anger', 'Boredom', 'Disgust', 'Fear', 'Happiness', 'Neutral', 'Sadness']))
 
 # RAVDESS
-print(classification_report(y_true, y_pred_classes, target_names=['Neutral', 'Calm', 'Happy', 'Sad', 'Angry', 'Fearful', 'Disgust', 'Surprised']))
+# print(classification_report(y_true, y_pred_classes, target_names=['Neutral', 'Calm', 'Happy', 'Sad', 'Angry', 'Fearful', 'Disgust', 'Surprised']))
+
+# SAVEE
+# print(classification_report(y_true, y_pred_classes, target_names=['anger', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise']))

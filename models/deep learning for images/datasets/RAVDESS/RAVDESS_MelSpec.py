@@ -6,11 +6,11 @@ import numpy as np
 from PIL import Image
 
 # Constants
-SAMPLE_RATE = 16000
-N_MELS = 128
-HOP_LENGTH = 512
-N_FFT = 2048
-IMAGE_SIZE = (100, 100)  # Target size for images
+SAMPLE_RATE = 44100
+N_MELS = 256
+HOP_LENGTH = 128
+N_FFT = 4096
+IMAGE_SIZE = (512, 512)
 
 # RAVDESS emotion mapping
 emotions = {
@@ -81,5 +81,5 @@ if __name__ == "__main__":
                    "KV6003BNN01/datasets/RAVDESS/"  # Path to the dataset folder
     output_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                   'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                  'images/datasets/RAVDESS/MELSPEC_100x100/'  # Path where Mel-Spectrogram images will be saved
+                  'images/datasets/RAVDESS/MELSPEC_512x512/'  # Path where Mel-Spectrogram images will be saved
     main(dataset_path, output_path)

@@ -6,11 +6,11 @@ import os
 from PIL import Image
 
 # Constants
-SAMPLE_RATE = 16000  # Updated to match EMODB's 16kHz sampling rate
-N_MELS = 128
-HOP_LENGTH = 512
-N_FFT = 2048
-IMAGE_SIZE = (100, 100)  # Target size for your images, adjust as needed
+SAMPLE_RATE = 44100
+N_MELS = 256
+HOP_LENGTH = 128
+N_FFT = 4096
+IMAGE_SIZE = (512, 512)
 
 # EMODB emotion mapping
 emotion_mapping = {
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/'
     output_dir = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                  'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                 'images/datasets/EMODB/MELSPEC_100x100/'
+                 'images/datasets/EMODB/MELSPEC_512x512/'
 
     print(f"Data path: {data_path}")
     print(f"Output directory: {output_dir}")
