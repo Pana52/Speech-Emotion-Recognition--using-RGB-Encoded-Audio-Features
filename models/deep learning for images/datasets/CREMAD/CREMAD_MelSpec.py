@@ -62,7 +62,5 @@ def process_audio_files(data_path, output_dir):
 if __name__ == "__main__":
     # Define the path to your CREMA-D dataset and the output directory for the spectrogram images
     data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/'
-    output_dir = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-                 'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset\models\deep learning for ' \
-                 'images/datasets/CREMAD/MELSPEC_512x512/'
+    output_dir = '/models/deep learning for images/datasets/CREMAD/Mel-Spectrograms/MELSPEC_512x512/'
     process_audio_files(data_path, output_dir)
