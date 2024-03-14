@@ -7,9 +7,7 @@ from preprocessing import load_images_from_folder, preprocess_data, split_datase
 from model import create_model
 
 # Load and preprocess the dataset
-data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-            'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/CREMAD/MELSPEC_100x100/'
+data_path = '/models/deep learning for images/datasets/CREMAD/Mel-Spectrograms/MELSPEC_100x100/'
 image_size = (100, 100)
 num_classes = 6
 batches = 32

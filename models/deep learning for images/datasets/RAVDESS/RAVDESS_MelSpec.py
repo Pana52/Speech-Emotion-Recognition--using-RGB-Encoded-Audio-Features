@@ -79,7 +79,5 @@ def main(dataset_path, output_path):
 if __name__ == "__main__":
     dataset_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
                    "KV6003BNN01/datasets/RAVDESS/"  # Path to the dataset folder
-    output_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-                  'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                  'images/datasets/RAVDESS/MELSPEC_512x512/'  # Path where Mel-Spectrogram images will be saved
+    output_path = '/models/deep learning for images/datasets/RAVDESS/Mel-Spectrograms/MELSPEC_512x512/'  # Path where Mel-Spectrogram images will be saved
     main(dataset_path, output_path)

@@ -53,9 +53,7 @@ def create_mel_spectrogram(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_m
 def main():
     dataset_dir = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                   'KV6003BNN01/datasets/SAVEE/'  # Update this to your dataset path
-    base_output_dir = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-                      'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                      'images/datasets/SAVEE/MELSPEC_512x512/'
+    base_output_dir = '/models/deep learning for images/datasets/SAVEE/Mel-Spectrograms/MELSPEC_512x512/'
 
     # Iterate through each file in the dataset directory
     for file in os.listdir(dataset_dir):
