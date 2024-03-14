@@ -40,8 +40,8 @@ def create_mfcc_image(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mfcc=N
         # Compute the MFCC
         mfcc = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=n_mfcc, hop_length=hop_length, n_fft=n_fft)
 
-        # Normalize the MFCCs
-        mfcc_normalized = (mfcc - np.min(mfcc)) / (np.max(mfcc) - np.min(mfcc))
+        # Standardize the MFCCs instead of min-max normalization
+        mfcc_standardized = (mfcc - np.mean(mfcc, axis=1, keepdims=True)) / np.std(mfcc, axis=1, keepdims=True)
 
         # Define the figure size based on the desired image size and dpi
         dpi = 100
@@ -49,8 +49,8 @@ def create_mfcc_image(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mfcc=N
         fig_height = image_size[1] / dpi
         plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
 
-        # Plot the normalized MFCC
-        librosa.display.specshow(mfcc_normalized, sr=sample_rate, hop_length=hop_length, x_axis='time', cmap='viridis')
+        # Plot the standardized MFCC using a more visually distinctive colormap
+        librosa.display.specshow(mfcc_standardized, sr=sample_rate, hop_length=hop_length, x_axis='time', cmap='inferno')
         plt.axis('off')
 
         # Generate a temporary save path
@@ -68,9 +68,6 @@ def create_mfcc_image(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mfcc=N
 
     except Exception as e:
         print(f"Error processing {file_name}: {e}")
-
-
-# The `main` function and the rest of the script remain largely the same, except for calling `create_mfcc_image`.
 
 
 def main(dataset_path, output_path):
