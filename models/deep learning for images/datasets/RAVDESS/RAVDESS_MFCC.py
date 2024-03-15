@@ -6,11 +6,11 @@ import numpy as np
 from PIL import Image
 
 # Constants
-SAMPLE_RATE = 44100
-N_MFCC = 40
-HOP_LENGTH = 128
-N_FFT = 8192
-IMAGE_SIZE = (512, 512)
+SAMPLE_RATE = 48000
+N_MFCC = 64
+HOP_LENGTH = 2048
+N_FFT = 4096
+IMAGE_SIZE = (256, 256)
 
 # RAVDESS emotion mapping remains the same
 emotions = {
@@ -40,17 +40,20 @@ def create_mfcc_image(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mfcc=N
         # Compute the MFCC
         mfcc = librosa.feature.mfcc(y=audio, sr=sample_rate, n_mfcc=n_mfcc, hop_length=hop_length, n_fft=n_fft)
 
-        # Standardize the MFCCs instead of min-max normalization
-        mfcc_standardized = (mfcc - np.mean(mfcc, axis=1, keepdims=True)) / np.std(mfcc, axis=1, keepdims=True)
+        # Standardize the MFCCs with an added epsilon for numerical stability
+        epsilon = 1e-10
+        mfcc_standardized = (mfcc - np.mean(mfcc, axis=1, keepdims=True)) / (
+                    np.std(mfcc, axis=1, keepdims=True) + epsilon)
 
         # Define the figure size based on the desired image size and dpi
-        dpi = 100
+        dpi = 300
         fig_width = image_size[0] / dpi
         fig_height = image_size[1] / dpi
         plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
 
         # Plot the standardized MFCC using a more visually distinctive colormap
-        librosa.display.specshow(mfcc_standardized, sr=sample_rate, hop_length=hop_length, x_axis='time', cmap='inferno')
+        librosa.display.specshow(mfcc_standardized, sr=sample_rate, hop_length=hop_length, x_axis='time',
+                                 cmap='inferno')
         plt.axis('off')
 
         # Generate a temporary save path
@@ -92,5 +95,5 @@ if __name__ == "__main__":
                    "KV6003BNN01/datasets/RAVDESS/"  # Path to the dataset folder
     output_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                   'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                  'images/datasets/RAVDESS/MFCCs/MFCC_512x512/'
+                  'images/datasets/RAVDESS/MFCCs/MFCC_256x256/'
     main(dataset_path, output_path)

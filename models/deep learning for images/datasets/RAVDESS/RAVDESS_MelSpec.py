@@ -6,11 +6,11 @@ import numpy as np
 from PIL import Image
 
 # Constants
-SAMPLE_RATE = 44100
+SAMPLE_RATE = 48000
 N_MELS = 256
-HOP_LENGTH = 128
-N_FFT = 4096
-IMAGE_SIZE = (512, 512)
+HOP_LENGTH = 1024
+N_FFT = 2048
+IMAGE_SIZE = (256, 256)
 
 # RAVDESS emotion mapping
 emotions = {
@@ -34,26 +34,39 @@ def parse_filename(filename):
 
 
 def create_mel_spectrogram(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mels=N_MELS, hop_length=HOP_LENGTH,
-                           n_fft=N_FFT):
+                                 n_fft=N_FFT, image_size=IMAGE_SIZE):
     try:
+        # Load the audio file
         audio, sample_rate = librosa.load(file_path, sr=sr)
-        S = librosa.feature.melspectrogram(y=audio, sr=sample_rate, n_mels=n_mels, hop_length=hop_length, n_fft=n_fft)
-        S_DB = librosa.power_to_db(S, ref=np.max)
 
-        # Create the figure
-        plt.figure(figsize=(IMAGE_SIZE[0] / 100, IMAGE_SIZE[1] / 100), dpi=100)
-        librosa.display.specshow(S_DB, sr=sample_rate, hop_length=hop_length, x_axis='time', y_axis='mel')
+        # Compute the Mel-spectrogram
+        S = librosa.feature.melspectrogram(y=audio, sr=sample_rate, n_mels=n_mels, hop_length=hop_length, n_fft=n_fft)
+
+        # Convert to dB
+        S_dB = librosa.power_to_db(S, ref=np.max)
+
+        # Define the figure size based on the desired image size and dpi
+        dpi = 300
+        fig_width = image_size[0] / dpi
+        fig_height = image_size[1] / dpi
+        plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
+
+        # Plot the Mel-spectrogram using a visually distinctive colormap
+        librosa.display.specshow(S_dB, sr=sample_rate, hop_length=hop_length, x_axis='time', y_axis='mel', cmap='inferno')
         plt.axis('off')
 
-        # Temporary save path
+        # Generate a temporary save path
         temp_save_path = f"{output_dir}/{file_name}.png"
+
+        # Save the figure
         plt.savefig(temp_save_path, bbox_inches='tight', pad_inches=0)
         plt.close()
 
-        # Resize the image to the desired output size using Image.Resampling.LANCZOS
+        # Open the image and resize it if necessary
         img = Image.open(temp_save_path)
-        img_resized = img.resize(IMAGE_SIZE, Image.Resampling.LANCZOS)
-        img_resized.save(temp_save_path)
+        if img.size != image_size:
+            img_resized = img.resize(image_size, Image.Resampling.LANCZOS)
+            img_resized.save(temp_save_path)
 
     except Exception as e:
         print(f"Error processing {file_name}: {e}")
@@ -79,5 +92,7 @@ def main(dataset_path, output_path):
 if __name__ == "__main__":
     dataset_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
                    "KV6003BNN01/datasets/RAVDESS/"  # Path to the dataset folder
-    output_path = '/models/deep learning for images/datasets/RAVDESS/Mel-Spectrograms/MELSPEC_512x512/'  # Path where Mel-Spectrogram images will be saved
+    output_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
+                 "KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for " \
+                 "images/datasets/RAVDESS\Mel-Spectrograms/MelSpec_256x256/"
     main(dataset_path, output_path)
