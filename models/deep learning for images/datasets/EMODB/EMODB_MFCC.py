@@ -6,11 +6,12 @@ import os
 from PIL import Image
 
 # Constants
-SAMPLE_RATE = 44100
-N_MFCC = 40
-HOP_LENGTH = 128
-N_FFT = 8192
-IMAGE_SIZE = (512, 512)
+SAMPLE_RATE = 8000  # Given
+N_MFCC = 13         # Number of MFCC features
+HOP_LENGTH = 256    # Number of samples between successive frames
+N_FFT = 512         # Number of FFT components
+IMAGE_SIZE = (32, 32)  # Size of the image
+
 
 # EMODB emotion mapping remains the same
 emotion_mapping = {
@@ -37,14 +38,14 @@ def create_mfcc_image(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mfcc=N
         mfcc_standardized = (mfcc - np.mean(mfcc, axis=1, keepdims=True)) / np.std(mfcc, axis=1, keepdims=True)
 
         # Define the figure size based on the desired image size and dpi
-        dpi = 100
+        dpi = 300  # Higher dpi for better initial image quality before resizing
         fig_width = image_size[0] / dpi
         fig_height = image_size[1] / dpi
         plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
 
-        # Plot the standardized MFCC using a more visually distinctive colormap
+        # Plot the standardized MFCC
         librosa.display.specshow(mfcc_standardized, sr=sample_rate, hop_length=hop_length, x_axis='time', cmap='inferno')
-        plt.axis('off')
+        plt.axis('off')  # Remove axes for a cleaner image
 
         # Generate a temporary save path
         temp_save_path = f"{output_dir}/{file_name}.png"
@@ -56,7 +57,7 @@ def create_mfcc_image(file_path, output_dir, file_name, sr=SAMPLE_RATE, n_mfcc=N
         # Open the image and resize it if necessary
         img = Image.open(temp_save_path)
         if img.size != image_size:
-            img_resized = img.resize(image_size, Image.Resampling.LANCZOS)
+            img_resized = img.resize(image_size, Image.Resampling.NEAREST)  # Use NEAREST for blocky effect
             img_resized.save(temp_save_path)
 
     except Exception as e:
@@ -99,7 +100,7 @@ if __name__ == "__main__":
     data_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/'
     output_dir = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                  'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                 'images/datasets/EMODB/MFCCs/MFCC_512x512/'
+                 'images/datasets/EMODB/MFCCs/MFCC_32x32/'
 
     print(f"Data path: {data_path}")
     print(f"Output directory: {output_dir}")

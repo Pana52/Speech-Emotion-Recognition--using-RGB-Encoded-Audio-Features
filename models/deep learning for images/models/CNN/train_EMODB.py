@@ -7,8 +7,8 @@ from preprocessing import create_data_generators
 # Load and preprocess the dataset
 dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
             'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/EMODB/MFCCs/MFCC_100x100/'
-input_shape = (100, 100, 3)
+            'images/datasets/EMODB/MFCCs/MFCC_32x32/'
+input_shape = (32, 32, 3)
 num_classes = 7
 batch_size = 32
 epochs = 100
@@ -19,7 +19,7 @@ train_generator, validation_generator, test_generator = create_data_generators(
     target_size=input_shape[:2],
     batch_size=batch_size,
     validation_split=0.2,
-    test_split=0.1
+    test_split=0.1,
 )
 
 # Create and compile the model

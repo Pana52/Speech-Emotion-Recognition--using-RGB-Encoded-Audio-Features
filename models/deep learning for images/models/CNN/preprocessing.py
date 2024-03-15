@@ -4,16 +4,20 @@ from sklearn.model_selection import train_test_split
 from keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 
 
-def create_data_generators(dataset_path, target_size=(100, 100), batch_size=32, validation_split=0.2, test_split=0.1):
-
+def create_data_generators(dataset_path, target_size=(32, 32), batch_size=32, validation_split=0.2, test_split=0.1):
+    # Enhanced ImageDataGenerator for training with additional data augmentation techniques
     train_datagen = ImageDataGenerator(
         rescale=1. / 255,
-        fill_mode='nearest',
-        validation_split=validation_split + test_split  # combine validation and test for splitting
+        fill_mode='nearest',  # Strategy used for filling in newly created pixels
+        validation_split=validation_split + test_split  # Combine validation and test for splitting
+
     )
 
     # Define ImageDataGenerator for validation and test without data augmentation
-    test_val_datagen = ImageDataGenerator(rescale=1. / 255, validation_split=validation_split + test_split)
+    test_val_datagen = ImageDataGenerator(
+        rescale=1. / 255,
+        validation_split=validation_split + test_split
+    )
 
     # Setup train, validation, and test generators
     train_generator = train_datagen.flow_from_directory(
@@ -21,7 +25,7 @@ def create_data_generators(dataset_path, target_size=(100, 100), batch_size=32, 
         target_size=target_size,
         batch_size=batch_size,
         class_mode='categorical',
-        subset='training',  # set as training data
+        subset='training',  # Set as training data
         seed=42
     )
 
@@ -30,7 +34,7 @@ def create_data_generators(dataset_path, target_size=(100, 100), batch_size=32, 
         target_size=target_size,
         batch_size=batch_size,
         class_mode='categorical',
-        subset='validation',  # set as validation data
+        subset='validation',  # Set as validation data
         seed=42
     )
 
@@ -39,14 +43,14 @@ def create_data_generators(dataset_path, target_size=(100, 100), batch_size=32, 
         target_size=target_size,
         batch_size=batch_size,
         class_mode='categorical',
-        subset='validation',  # intentionally using 'validation' to split data
+        subset='validation',  # Intentionally using 'validation' to split data
         seed=42
     )
 
     return train_generator, validation_generator, test_generator
 
 
-def load_dataset(dataset_path, image_size=(100, 100)):
+def load_dataset(dataset_path, image_size=(32, 32)):
 
     images = []
     labels = []
