@@ -2,7 +2,7 @@ from keras.models import Sequential
 from keras.layers import Conv2D, BatchNormalization, MaxPooling2D, Flatten, Dense, Dropout, GaussianNoise
 
 
-def create_model(input_shape=(32, 32, 3), num_classes=7, noise_stddev=0.1):
+def create_model(input_shape=(32, 32, 3), num_classes=8, noise_stddev=0.1):
     model = Sequential([
         GaussianNoise(noise_stddev, input_shape=input_shape),  # Adding GaussianNoise layer here
         Conv2D(32, (3, 3), activation='relu', padding='same'),

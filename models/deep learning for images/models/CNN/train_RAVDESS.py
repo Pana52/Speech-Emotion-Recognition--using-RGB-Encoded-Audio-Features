@@ -1,4 +1,5 @@
 from keras.optimizers import Adam
+from CustomEarlyStopping import CustomEarlyStoppingAndSaveBest
 from sklearn.metrics import classification_report
 import numpy as np
 from model import create_model
@@ -7,13 +8,12 @@ from preprocessing import create_data_generators
 # Load and preprocess the dataset
 dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
             'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/RAVDESS/MFCCs/MFCC_256x256/'
-input_shape = (256, 256, 3)
-num_classes = 8
+            'images/datasets/RAVDESS/MFCCs/MFCC_32x32/'
+input_shape = (32, 32, 3)
+num_classes = 6
 batch_size = 32
 epochs = 100
-
-# Create data generators
+# Create data generators for training, validation, and testing
 train_generator, validation_generator, test_generator = create_data_generators(
     dataset_path=dataset_path,
     target_size=input_shape[:2],
@@ -26,6 +26,9 @@ train_generator, validation_generator, test_generator = create_data_generators(
 model = create_model(input_shape=input_shape, num_classes=num_classes)
 model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
 
+# Custom early stopping is commented out; uncomment if needed
+# custom_early_stopping = CustomEarlyStoppingAndSaveBest(patience=30, verbose=1)
+
 # Model training
 print("Starting training...")
 history = model.fit(
@@ -33,7 +36,8 @@ history = model.fit(
     steps_per_epoch=train_generator.samples // batch_size,
     validation_data=validation_generator,
     validation_steps=validation_generator.samples // batch_size,
-    epochs=epochs
+    epochs=epochs,
+    # callbacks=[custom_early_stopping]
 )
 print("Training completed.")
 
@@ -43,7 +47,6 @@ test_loss, test_acc = model.evaluate(test_generator, steps=test_generator.sample
 print(f'\nTest accuracy: {test_acc*100:.2f}%')
 
 # Predictions for classification report
-# Due to the nature of generators, we need to predict in batches and compile the results.
 y_pred = []
 y_true = []
 for _ in range(test_generator.samples // batch_size):
