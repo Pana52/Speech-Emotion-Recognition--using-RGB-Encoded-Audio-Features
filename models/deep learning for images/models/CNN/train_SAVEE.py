@@ -8,8 +8,8 @@ from preprocessing import create_data_generators
 # Load and preprocess the dataset
 dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
             'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/SAVEE/Mel-Spectrograms/MelSpec_128x128/'
-input_shape = (128, 128, 3)
+            'images/datasets/SAVEE/MFCCs/MFCC_32x32/'
+input_shape = (32, 32, 3)
 num_classes = 7
 batch_size = 32
 epochs = 1000
@@ -27,7 +27,7 @@ model = create_model(input_shape=input_shape, num_classes=num_classes)
 model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Custom early stopping is commented out; uncomment if needed
-custom_early_stopping = CustomEarlyStoppingAndSaveBest(patience=10, verbose=1)
+custom_early_stopping = CustomEarlyStoppingAndSaveBest(patience=20, verbose=1)
 
 # Model training
 print("Starting training...")
