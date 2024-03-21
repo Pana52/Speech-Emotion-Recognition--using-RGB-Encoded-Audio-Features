@@ -8,11 +8,11 @@ from preprocessing import create_data_generators
 # Load and preprocess the dataset
 dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
             'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/RAVDESS/MFCCs/MFCC_32x32/'
-input_shape = (32, 32, 3)
-num_classes = 6
+            'images/datasets/RAVDESS/Mel-Spectrograms/MelSpec_128x128/'
+input_shape = (128, 128, 3)
+num_classes = 8
 batch_size = 32
-epochs = 100
+epochs = 1000
 # Create data generators for training, validation, and testing
 train_generator, validation_generator, test_generator = create_data_generators(
     dataset_path=dataset_path,
@@ -27,7 +27,7 @@ model = create_model(input_shape=input_shape, num_classes=num_classes)
 model.compile(optimizer=Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
 
 # Custom early stopping is commented out; uncomment if needed
-# custom_early_stopping = CustomEarlyStoppingAndSaveBest(patience=30, verbose=1)
+custom_early_stopping = CustomEarlyStoppingAndSaveBest(patience=10, verbose=1)
 
 # Model training
 print("Starting training...")
@@ -37,7 +37,7 @@ history = model.fit(
     validation_data=validation_generator,
     validation_steps=validation_generator.samples // batch_size,
     epochs=epochs,
-    # callbacks=[custom_early_stopping]
+    callbacks=[custom_early_stopping]
 )
 print("Training completed.")
 

@@ -3,8 +3,8 @@ import numpy as np
 
 
 class CustomEarlyStoppingAndSaveBest(Callback):
-    def __init__(self, monitor_loss='val_loss', monitor_acc='val_accuracy', patience=0, verbose=0, acc_threshold=0.3,
-                 start_epoch=50):
+    def __init__(self, monitor_loss='val_loss', monitor_acc='val_accuracy', patience=0, verbose=0, acc_threshold=0.2,
+                 start_epoch=5):
         super(CustomEarlyStoppingAndSaveBest, self).__init__()
         self.monitor_loss = monitor_loss
         self.monitor_acc = monitor_acc
