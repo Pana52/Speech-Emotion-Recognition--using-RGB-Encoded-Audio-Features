@@ -1,7 +1,6 @@
 from keras.callbacks import Callback
 import numpy as np
 
-
 class CustomEarlyStopping(Callback):
     def __init__(self, switch_epoch, min_delta=0, patience=0):
         super().__init__()
@@ -32,7 +31,7 @@ class CustomEarlyStopping(Callback):
             else:
                 self.wait_loss += 1
                 if self.wait_loss >= self.patience:
-                    print(f"\nEpoch {epoch + 1}: early stopping (minimizing val_loss)")
+                    print(f"\nEpoch {epoch+1}: early stopping (minimizing val_loss)")
                     self.model.stop_training = True
                     self.model.set_weights(self.best_weights)
 
@@ -45,7 +44,7 @@ class CustomEarlyStopping(Callback):
             else:
                 self.wait_acc += 1
                 if self.wait_acc >= self.patience:
-                    print(f"\nEpoch {epoch + 1}: early stopping (maximizing val_accuracy)")
+                    print(f"\nEpoch {epoch+1}: early stopping (maximizing val_accuracy)")
                     self.model.stop_training = True
                     self.model.set_weights(self.best_weights)
 

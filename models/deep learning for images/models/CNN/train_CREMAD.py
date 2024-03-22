@@ -1,146 +1,126 @@
+# Import necessary libraries
+from keras.models import Sequential
+from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from keras.callbacks import Callback
+from keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from PIL import Image
 import numpy as np
 import os
-from keras.preprocessing.image import ImageDataGenerator
-from keras.callbacks import ModelCheckpoint, EarlyStopping
-from sklearn.metrics import classification_report
-from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization, Activation
-from CustomEarlyStopping import CustomEarlyStopping
 
-# CONSTANTS AND VAARIABLES
-DATA_PATH = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-            'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-            'images/datasets/CREMAD/Mel-Spectrograms/MelSpec_32x32/'
-NUM_CLASSES = 6
-INPUT_SHAPE = (32, 32, 3)
-IMG_SIZE = (32, 32)
-EPOCHS = 1000
+EPOCH = 100
+PATIENCE = 20
+SWITCH_EPOCH = 20
+IMAGE_SIZE = (32, 32)
 BATCH_SIZE = 32
 
-# CUSTOM EARLY STOPPING CONSTANTS
-MONITOR = "val_loss"
-PATIENCE = 20
-MODE = "min"
-START_EPOCH = 5
-SWITCH_EPOCH = 50 + START_EPOCH
+
+# CustomEarlyStopping Class
+class CustomEarlyStopping(Callback):
+    def __init__(self, switch_epoch, min_delta=0, patience=0):
+        super().__init__()
+        self.switch_epoch = switch_epoch  # Epoch to switch from val_loss to val_accuracy
+        self.min_delta = min_delta
+        self.patience = patience
+        self.best_weights = None  # Store the best weights
+
+        self.best_val_loss = np.Inf
+        self.wait_loss = 0  # Counter for patience mechanism for loss
+
+        self.best_val_acc = 0
+        self.wait_acc = 0  # Counter for patience mechanism for accuracy
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        val_loss = logs.get('val_loss')
+        val_acc = logs.get('val_accuracy')
+
+        if epoch < self.switch_epoch:
+            if np.less(val_loss - self.min_delta, self.best_val_loss):
+                self.best_val_loss = val_loss
+                self.wait_loss = 0
+                self.best_weights = self.model.get_weights()
+            else:
+                self.wait_loss += 1
+                if self.wait_loss >= self.patience:
+                    print(f"\nEpoch {epoch + 1}: early stopping (minimizing val_loss)")
+                    self.model.stop_training = True
+                    self.model.set_weights(self.best_weights)
+        else:
+            if np.greater(val_acc - self.min_delta, self.best_val_acc):
+                self.best_val_acc = val_acc
+                self.wait_acc = 0
+                self.best_weights = self.model.get_weights()
+            else:
+                self.wait_acc += 1
+                if self.wait_acc >= self.patience:
+                    print(f"\nEpoch {epoch + 1}: early stopping (maximizing val_accuracy)")
+                    self.model.stop_training = True
+                    self.model.set_weights(self.best_weights)
 
 
-def load_data(dataset_path, img_size=IMG_SIZE, val_size=0.2):
-    """
-    Load and preprocess the dataset.
-    """
-    train_datagen = ImageDataGenerator(
-        rescale=1. / 255,
-        # rotation_range=20,
-        # width_shift_range=0.2,
-        # height_shift_range=0.2,
-        # shear_range=0.2,
-        # zoom_range=0.2,
-        # horizontal_flip=True,
-        fill_mode='nearest',
-        validation_split=val_size
-    )
+# Function to load and preprocess data
+def load_and_preprocess_data(dataset_path):
+    classes = os.listdir(dataset_path)
+    class_labels = {class_name: index for index, class_name in enumerate(classes)}
+    X = []  # Image data
+    y = []  # Labels
 
-    validation_datagen = ImageDataGenerator(
-        rescale=1. / 255,
-        validation_split=val_size
-    )
+    for class_name, class_index in class_labels.items():
+        class_path = os.path.join(dataset_path, class_name)
+        for image_file in os.listdir(class_path):
+            image_path = os.path.join(class_path, image_file)
+            image = Image.open(image_path).convert('RGB')  # Ensure 3 channels
+            image = image.resize(IMAGE_SIZE)  # Resize to a common size
+            X.append(np.array(image))
+            y.append(class_index)
+    X = np.array(X) / 255.0  # Normalize pixel values
+    y = to_categorical(y, num_classes=len(classes))  # Convert labels to one-hot encoding
 
-    train_generator = train_datagen.flow_from_directory(
-        dataset_path,
-        target_size=img_size,
-        batch_size=32,
-        class_mode='categorical',
-        subset='training',
-        color_mode='rgb'
-    )
-
-    validation_generator = validation_datagen.flow_from_directory(
-        dataset_path,
-        target_size=img_size,
-        batch_size=32,
-        class_mode='categorical',
-        subset='validation',
-        color_mode='rgb'
-    )
-
-    return train_generator, validation_generator
+    # Split into training and validation sets
+    return train_test_split(X, y, test_size=0.2, random_state=42), class_labels
 
 
-def build_model(input_shape=INPUT_SHAPE, num_classes=NUM_CLASSES):
-    """
-    Build and compile the CNN model with batch normalization.
-    """
+# Function to create the CNN model
+def create_model(input_shape, num_classes):
     model = Sequential([
-        # First Conv Block
-        Conv2D(32, (3, 3), padding='same', input_shape=input_shape),
-        BatchNormalization(),
-        Activation('relu'),
+        Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),
         MaxPooling2D((2, 2)),
-
-        # Second Conv Block
-        Conv2D(64, (3, 3), padding='same'),
-        BatchNormalization(),
-        Activation('relu'),
+        Conv2D(64, (3, 3), activation='relu'),
         MaxPooling2D((2, 2)),
-
-        # Third Conv Block
-        Conv2D(128, (3, 3), padding='same'),
-        BatchNormalization(),
-        Activation('relu'),
+        Conv2D(128, (3, 3), activation='relu'),
         MaxPooling2D((2, 2)),
-
-        # Fully Connected Layers
         Flatten(),
-        Dense(128),
-        BatchNormalization(),
-        Activation('relu'),
+        Dense(128, activation='relu'),
         Dropout(0.5),
-
-        # Output Layer
         Dense(num_classes, activation='softmax')
     ])
-
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 
 
-def train_model(dataset_path, input_shape=INPUT_SHAPE, num_classes=NUM_CLASSES, epochs=EPOCHS, batch_size=BATCH_SIZE):
-    train_generator, validation_generator = load_data(dataset_path, img_size=input_shape[:2])
+# Function to compile and train the model, including the classification report
+def compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels, epochs=EPOCH, batch_size=BATCH_SIZE):  # Added batch_size parameter
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    custom_early_stopping = CustomEarlyStopping(switch_epoch=20, min_delta=0.001, patience=10)
+    history = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val), callbacks=[custom_early_stopping])  # Added batch_size here
 
-    model = build_model(input_shape, num_classes)
+    # Predict classes on the validation set
+    y_pred = model.predict(X_val, batch_size=batch_size)  # Added batch_size here for consistency in prediction
+    y_pred_classes = np.argmax(y_pred, axis=1)
+    y_true_classes = np.argmax(y_val, axis=1)
 
-    # callbacks = EarlyStopping(monitor='val_accuracy', patience=PATIENCE, verbose=1, mode='max')
+    # Generate and print the classification report
+    report = classification_report(y_true_classes, y_pred_classes, target_names=list(class_labels.keys()))
+    print(report)
 
-    custom_early_stopping = CustomEarlyStopping(switch_epoch=SWITCH_EPOCH, min_delta=0.001, patience=PATIENCE)
-
-    model_checkpoint = ModelCheckpoint(
-        'best_model.h5',
-        save_best_only=True,
-        monitor='val_loss',
-        mode='min'
-    )
-
-    history = model.fit(
-        train_generator,
-        steps_per_epoch=train_generator.samples // batch_size,
-        epochs=epochs,
-        validation_data=validation_generator,
-        validation_steps=validation_generator.samples // batch_size,
-        callbacks=custom_early_stopping
-        # callbacks=callbacks
-    )
-
-    validation_generator.reset()
-    Y_pred = model.predict(validation_generator, steps=validation_generator.samples // batch_size + 1)
-    y_pred = np.argmax(Y_pred, axis=1)
-
-    print('Classification Report')
-    print(classification_report(validation_generator.classes, y_pred,
-                                target_names=list(validation_generator.class_indices.keys())))
+    return history
 
 
 if __name__ == "__main__":
-    dataset_path = DATA_PATH
-    train_model(dataset_path)
-    print("Model training complete.")
+    dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
+                   'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
+                   'images/datasets/CREMAD/Mel-Spectrograms/MelSpec_32x32/'
+    (X_train, X_val, y_train, y_val), class_labels = load_and_preprocess_data(dataset_path)
+    model = create_model(input_shape=X_train.shape[1:], num_classes=y_train.shape[1])
+    history = compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels)
