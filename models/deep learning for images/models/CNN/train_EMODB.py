@@ -12,7 +12,7 @@ import os
 EPOCH = 100
 PATIENCE = 20
 SWITCH_EPOCH = 20
-IMAGE_SIZE = (32, 32)
+IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32
 
 
@@ -120,7 +120,7 @@ def compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels,
 if __name__ == "__main__":
     dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                    'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                   'images/datasets/EMODB/Mel-Spectrograms/MelSpec_32x32/'
+                   'images/datasets/EMODB/MFCCs/MFCC_256x256/'
     (X_train, X_val, y_train, y_val), class_labels = load_and_preprocess_data(dataset_path)
     model = create_model(input_shape=X_train.shape[1:], num_classes=y_train.shape[1])
     history = compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels)
