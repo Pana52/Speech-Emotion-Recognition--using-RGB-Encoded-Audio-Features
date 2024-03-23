@@ -14,8 +14,8 @@ from keras.layers import Input
 EPOCH = 100
 PATIENCE = 20
 SWITCH_EPOCH = 20
-IMAGE_SIZE = (32, 32)
-INPUT_SIZE = (32, 32, 3)
+IMAGE_SIZE = (128, 128)
+INPUT_SIZE = (128, 128, 3)
 BATCH_SIZE = 32
 
 
@@ -94,14 +94,14 @@ def load_and_preprocess_data(dataset_path):
 
 # Function to create the model with DenseNet
 def create_model(input_shape, num_classes):
-    input_tensor = Input(shape=INPUT_SIZE)
-    base_model = DenseNet121(include_top=False, weights='imagenet', input_tensor=input_tensor)
+    input_tensor = Input(shape=input_shape)  # Ensure input_shape matches your dataset
+    base_model = DenseNet121(include_top=False, weights='imagenet', input_tensor=input_tensor, pooling='avg')  # Note: pooling='avg' adds global average pooling
+
     # Making the base model non-trainable (Optional, depending on whether you want to fine-tune)
     base_model.trainable = False
 
-    # Adding custom layers on top of DenseNet
+    # The base model already includes GlobalAveragePooling2D due to pooling='avg'
     x = base_model.output
-    x = GlobalAveragePooling2D()(x)
     x = Dense(128, activation='relu')(x)
     x = Dropout(0.5)(x)
     predictions = Dense(num_classes, activation='softmax')(x)
@@ -113,7 +113,7 @@ def create_model(input_shape, num_classes):
 # Function to compile and train the model, including the classification report
 def compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels, epochs=EPOCH, batch_size=BATCH_SIZE):
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    custom_early_stopping = CustomEarlyStopping(switch_epoch=20, min_delta=0.001, patience=10)
+    custom_early_stopping = CustomEarlyStopping(switch_epoch=SWITCH_EPOCH, min_delta=0.001, patience=PATIENCE)
     history = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val),
                         callbacks=[custom_early_stopping])
 
@@ -130,7 +130,7 @@ def compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels,
 if __name__ == "__main__":
     dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                    'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                   'images/datasets/SAVEE/Mel-Spectrograms/MelSpec_32x32/'
+                   'images/datasets/SAVEE/MFCCs/MFCC_128x128/'
     (X_train, X_val, y_train, y_val), class_labels = load_and_preprocess_data(dataset_path)
     model = create_model(input_shape=X_train.shape[1:], num_classes=y_train.shape[1])
     history = compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels)
