@@ -19,7 +19,7 @@ INPUT_SHAPE = (32, 32, 3)
 BATCH_sIZE = 32
 EPOCHS = 1000
 PATIENCE = 50
-
+NUM_CLASSES = 8
 
 def split_dataset(dataset_path, split_train=TRAIN, split_val=VAL, split_test=TEST):
     assert split_train + split_val + split_test == 1, "Splits must sum to 1"
@@ -63,19 +63,19 @@ def load_data(dataset_path, img_shape, batch_size):
 
     train_generator = train_datagen.flow_from_directory(
         os.path.join(dataset_path, 'train'),
-        target_size=IMG_SHAPE,
+        target_size=img_shape,
         batch_size=batch_size,
         class_mode='categorical')
 
     validation_generator = validation_datagen.flow_from_directory(
         os.path.join(dataset_path, 'val'),
-        target_size=IMG_SHAPE,
+        target_size=img_shape,
         batch_size=batch_size,
         class_mode='categorical')
 
     test_generator = test_datagen.flow_from_directory(
         os.path.join(dataset_path, 'test'),
-        target_size=IMG_SHAPE,
+        target_size=img_shape,
         batch_size=batch_size,
         class_mode='categorical',
         shuffle=False)
@@ -117,10 +117,9 @@ def main():
                    'images/datasets/RAVDESS/MFCCs/MFCC_32x32/'
 
     split_dataset(dataset_path)
-    num_classes = len(next(os.walk(os.path.join(dataset_path, 'train')))[1])
 
     train_generator, validation_generator, test_generator = load_data(dataset_path, IMG_SHAPE, BATCH_sIZE)
-    model = build_model(INPUT_SHAPE, num_classes)
+    model = build_model(INPUT_SHAPE, NUM_CLASSES)
     train_model(model, train_generator, validation_generator, EPOCHS, PATIENCE)
     evaluate_model(model, test_generator)
 
