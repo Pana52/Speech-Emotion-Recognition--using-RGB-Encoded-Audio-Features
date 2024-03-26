@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from sklearn.model_selection import train_test_split
 from keras.preprocessing.image import ImageDataGenerator
 from keras.applications.resnet import ResNet50, preprocess_input
 from keras.models import Model
@@ -7,28 +8,74 @@ from keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from keras.optimizers import Adam
 from keras.callbacks import EarlyStopping
 from sklearn.metrics import classification_report
+import shutil
+
+TRAIN = 0.7
+VAL = 0.2
+TEST = 1 - TRAIN - VAL
+
+IMG_SHAPE = (32, 32)
+INPUT_SHAPE = (32, 32, 3)
+BATCH_sIZE = 32
+EPOCHS = 1000
+PATIENCE = 50
 
 
-def load_data(dataset_path, img_width, img_height, batch_size):
-    train_datagen = ImageDataGenerator(preprocessing_function=preprocess_input, validation_split=0.2)
-    train_generator = train_datagen.flow_from_directory(
-        dataset_path,
-        target_size=(img_height, img_width),
-        batch_size=batch_size,
-        class_mode='categorical',
-        subset='training')
+def split_dataset(dataset_path, split_train=TRAIN, split_val=VAL, split_test=TEST):
+    assert split_train + split_val + split_test == 1, "Splits must sum to 1"
+    # Paths for the split directories
+    train_dir = os.path.join(dataset_path, 'train')
+    val_dir = os.path.join(dataset_path, 'val')
+    test_dir = os.path.join(dataset_path, 'test')
 
-    validation_generator = train_datagen.flow_from_directory(
-        dataset_path,
-        target_size=(img_height, img_width),
-        batch_size=batch_size,
-        class_mode='categorical',
-        subset='validation')
+    # Create split directories if they do not exist
+    for path in [train_dir, val_dir, test_dir]:
+        if not os.path.exists(path):
+            os.makedirs(path)
 
+    # Move files into the split directories
+    for class_dir in os.listdir(dataset_path):
+        class_path = os.path.join(dataset_path, class_dir)
+        if os.path.isdir(class_path) and class_dir not in ['train', 'val', 'test']:
+            files = [os.path.join(class_path, f) for f in os.listdir(class_path)]
+            train_files, test_files = train_test_split(files, test_size=split_test + split_val, random_state=42)
+            val_files, test_files = train_test_split(test_files, test_size=split_test / (split_test + split_val),
+                                                     random_state=42)
+
+            # Function to copy files to their respective directories
+            def copy_files(files, destination):
+                for f in files:
+                    dest_path = os.path.join(destination, class_dir)
+                    if not os.path.exists(dest_path):
+                        os.makedirs(dest_path)
+                    shutil.copy(f, dest_path)
+
+            # Copy files to respective directories
+            copy_files(train_files, train_dir)
+            copy_files(val_files, val_dir)
+            copy_files(test_files, test_dir)
+
+
+def load_data(dataset_path, img_shape, batch_size):
+    train_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+    validation_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
     test_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+
+    train_generator = train_datagen.flow_from_directory(
+        os.path.join(dataset_path, 'train'),
+        target_size=IMG_SHAPE,
+        batch_size=batch_size,
+        class_mode='categorical')
+
+    validation_generator = validation_datagen.flow_from_directory(
+        os.path.join(dataset_path, 'val'),
+        target_size=IMG_SHAPE,
+        batch_size=batch_size,
+        class_mode='categorical')
+
     test_generator = test_datagen.flow_from_directory(
-        dataset_path,
-        target_size=(img_height, img_width),
+        os.path.join(dataset_path, 'test'),
+        target_size=IMG_SHAPE,
         batch_size=batch_size,
         class_mode='categorical',
         shuffle=False)
@@ -36,8 +83,8 @@ def load_data(dataset_path, img_width, img_height, batch_size):
     return train_generator, validation_generator, test_generator
 
 
-def build_model(img_height, img_width, num_classes):
-    base_model = ResNet50(include_top=False, weights='imagenet', input_shape=(img_height, img_width, 3))
+def build_model(input_shape, num_classes):
+    base_model = ResNet50(include_top=False, weights='imagenet', input_shape=input_shape)
     base_model.trainable = False
 
     x = GlobalAveragePooling2D()(base_model.output)
@@ -68,15 +115,13 @@ def main():
     dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                    'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
                    'images/datasets/EMODB/MFCCs/MFCC_32x32/'
-    img_width, img_height = 32, 32
-    batch_size = 32
-    epochs = 1000
-    patience = 30
-    num_classes = len(next(os.walk(dataset_path))[1])
 
-    train_generator, validation_generator, test_generator = load_data(dataset_path, img_width, img_height, batch_size)
-    model = build_model(img_height, img_width, num_classes)
-    train_model(model, train_generator, validation_generator, epochs, patience)
+    split_dataset(dataset_path)
+    num_classes = len(next(os.walk(os.path.join(dataset_path, 'train')))[1])
+
+    train_generator, validation_generator, test_generator = load_data(dataset_path, IMG_SHAPE, BATCH_sIZE)
+    model = build_model(INPUT_SHAPE, num_classes)
+    train_model(model, train_generator, validation_generator, EPOCHS, PATIENCE)
     evaluate_model(model, test_generator)
 
 
