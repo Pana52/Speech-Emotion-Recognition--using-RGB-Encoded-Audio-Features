@@ -14,12 +14,13 @@ TRAIN = 0.7
 VAL = 0.2
 TEST = 1 - TRAIN - VAL
 
-IMG_SHAPE = (32, 32)
-INPUT_SHAPE = (32, 32, 3)
+IMG_SHAPE = (256, 256)
+INPUT_SHAPE = (256, 256, 3)
 BATCH_sIZE = 32
 EPOCHS = 1000
-PATIENCE = 50
+PATIENCE = 100
 NUM_CLASSES = 7
+
 
 def split_dataset(dataset_path, split_train=TRAIN, split_val=VAL, split_test=TEST):
     assert split_train + split_val + split_test == 1, "Splits must sum to 1"
@@ -114,7 +115,7 @@ def evaluate_model(model, test_generator):
 def main():
     dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
                    'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                   'images/datasets/SAVEE/MFCCs/MFCC_32x32/'
+                   'images/datasets/SAVEE/Mel-Spectrograms/MelSpec_256x256/'
 
     split_dataset(dataset_path)
 
