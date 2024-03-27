@@ -11,8 +11,8 @@ import os
 from keras.callbacks import EarlyStopping
 
 
-EPOCH = 100
-PATIENCE = 20
+EPOCH = 1000
+PATIENCE = 50
 SWITCH_EPOCH = 20
 IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32
@@ -104,11 +104,11 @@ def create_model(input_shape, num_classes):
 # Function to compile and train the model, including the classification report
 def compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels, epochs=EPOCH, batch_size=BATCH_SIZE):
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    early_stopping = EarlyStopping(patience=20, verbose=1)
-    custom_early_stopping = CustomEarlyStopping(switch_epoch=10, min_delta=0.001, patience=20)
-    # early_stopping_callback = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=30, verbose=1,restore_best_weights=True)
+    # early_stopping = EarlyStopping(patience=20, verbose=1)
+    # custom_early_stopping = CustomEarlyStopping(switch_epoch=10, min_delta=0.001, patience=20)
+    early_stopping_callback = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=PATIENCE, verbose=1, restore_best_weights=True)
 
-    history = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val), callbacks=custom_early_stopping)  # Added batch_size here
+    history = model.fit(X_train, y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_val, y_val), callbacks=early_stopping_callback)  # Added batch_size here
 
     # Predict classes on the validation set
     y_pred = model.predict(X_val, batch_size=batch_size)
@@ -128,4 +128,4 @@ if __name__ == "__main__":
                    'images/datasets/CREMAD/MFCCs/MFCC_256x256/'
     (X_train, X_val, y_train, y_val), class_labels = load_and_preprocess_data(dataset_path)
     model = create_model(input_shape=X_train.shape[1:], num_classes=y_train.shape[1])
-    history = compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels)
+    compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels)
