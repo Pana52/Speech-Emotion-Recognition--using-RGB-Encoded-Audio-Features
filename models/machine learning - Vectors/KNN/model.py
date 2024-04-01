@@ -1,4 +1,4 @@
-# model.py
+# cnn_feature_extractor.py
 from sklearn.neighbors import KNeighborsClassifier
 
 

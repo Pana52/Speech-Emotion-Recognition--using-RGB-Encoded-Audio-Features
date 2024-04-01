@@ -1,4 +1,4 @@
-# model.py
+# cnn_feature_extractor.py
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.regularizers import l2
