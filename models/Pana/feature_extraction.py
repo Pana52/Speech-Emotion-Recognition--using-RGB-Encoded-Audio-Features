@@ -2,10 +2,14 @@ import os
 import librosa
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.utils import load_img, img_to_array
 from librosa.display import specshow
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
+import tensorflow as tf
+from keras.preprocessing import image
+from keras.applications.resnet import ResNet50, preprocess_input
 
 # Configuration
 DATASET_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
@@ -36,55 +40,92 @@ def extract_mfcc(audio, sr=SAMPLE_RATE, n_mfcc=13):
     return mfcc_scaled
 
 
-def create_mel_spectrogram(audio, sr=SAMPLE_RATE, save_path='mel_spectrogram.png', n_mels=128, hop_length=1024, n_fft=2048):
-    # Corrected function call with keyword arguments
+def create_mel_spectrogram(audio, sr=SAMPLE_RATE, save_path='mel_spectrogram.png', n_mels=N_MELS, hop_length=HOP_L,
+                           n_fft=N_FFT):
     S = librosa.feature.melspectrogram(y=audio, sr=sr, n_mels=n_mels, hop_length=hop_length, n_fft=n_fft)
     S_DB = librosa.power_to_db(S, ref=np.max)
-    plt.figure(figsize=(10, 4))
-    specshow(S_DB, sr=sr, hop_length=hop_length, x_axis='time', y_axis='mel')
-    plt.axis('off')
-    plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
-    plt.close()
+
+    # Determine figure size for 256x256 image resolution
+    fig, ax = plt.subplots(figsize=(2.56, 2.56), dpi=100)
+    plt.axis('off')  # Ensure no axes are shown
+
+    # Displaying the mel spectrogram without axis labels
+    specshow(S_DB, sr=sr, hop_length=hop_length)
+    plt.tight_layout(pad=0)
+
+    # Save the spectrogram as an image file, ensuring no whitespace or padding
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0, dpi=100)
+    plt.close(fig)
 
 
 def apply_clustering(features, n_clusters=N_CLUSTERS):
+    """
+    Applies KMeans clustering to the features and transforms them based on the cluster centroids.
+    """
     kmeans = KMeans(n_clusters=n_clusters, random_state=42)
-    features_flat = np.array(features).reshape(len(features), -1)
-    enhanced_features = kmeans.fit_transform(features_flat)
-    return enhanced_features
+    # Fit and transform the features to the cluster-distance space
+    clustered_features = kmeans.fit_transform(features)
+    return clustered_features
+
+
+model = ResNet50(weights='imagenet', include_top=False, input_shape=(256, 256, 3))
+
+
+def extract_image_features(image_path):
+    # Load and preprocess the image
+    img = load_img(image_path, target_size=(256, 256))  # Resize image to match model's expected input dimensions
+    img_array = img_to_array(img)  # Convert the PIL Image to a numpy array
+    img_array_expanded_dims = np.expand_dims(img_array, axis=0)  # Add an extra dimension for the batch size
+    preprocessed_img = preprocess_input(img_array_expanded_dims)  # Preprocess the image using ResNet50's preprocessing
+
+    # Predict the features of the image using the model
+    features = model.predict(preprocessed_img)
+
+    # Flatten the features to a 1D vector to concatenate with audio features
+    flattened_features = features.flatten()
+
+    return flattened_features
 
 
 def process_dataset(dataset_path=DATASET_PATH, emotions=EMOTIONS, test_size=0.2, validation_size=0.2):
-    features, labels = [], []
+    combined_features, labels = [], []  # Lists to store combined audio+image features and labels
+
     audio_base_path = os.path.join(dataset_path, "Audio")
-    image_base_path = os.path.join(dataset_path, "Image")
+    image_base_path = os.path.join(dataset_path, "Images")
 
     for emotion in emotions:
         audio_emotion_path = os.path.join(audio_base_path, emotion)
         image_emotion_path = os.path.join(image_base_path, emotion)
-        if not os.path.exists(image_emotion_path):
-            os.makedirs(image_emotion_path)
 
         for filename in os.listdir(audio_emotion_path):
-            file_path = os.path.join(audio_emotion_path, filename)
-            audio = load_and_preprocess_audio(file_path)
+            if not filename.endswith(".wav"):  # Process only .wav files
+                continue
+
+            audio_file_path = os.path.join(audio_emotion_path, filename)
+            image_file_path = os.path.join(image_emotion_path,
+                                           filename.replace(".wav", ".png"))  # Assuming image format is .png
+
+            audio = load_and_preprocess_audio(audio_file_path)
             mfcc = extract_mfcc(audio)
 
-            mel_spec_filename = filename.replace(".wav", ".png")
-            mel_spec_path = os.path.join(image_emotion_path, mel_spec_filename)
+            image_features = extract_image_features(image_file_path)  # Extract image features
 
-            create_mel_spectrogram(audio, save_path=mel_spec_path)
-            features.append((mfcc, mel_spec_path))
+            combined_feature = np.concatenate((mfcc, image_features))  # Combine audio and image features
+            combined_features.append(combined_feature)
             labels.append(emotion)
 
-    mfcc_features = [feature[0] for feature in features]  # Extracting MFCCs for clustering
-    enhanced_features = apply_clustering(mfcc_features, n_clusters=N_CLUSTERS)
-    label_to_index = {emotion: index for index, emotion in enumerate(emotions)}
-    numeric_labels = [label_to_index[label] for label in labels]
-    X_train, X_test, y_train, y_test = train_test_split(enhanced_features, numeric_labels, test_size=test_size,
-                                                        stratify=numeric_labels, random_state=42)
+    # Convert lists to NumPy arrays for clustering
+    combined_features = np.array(combined_features)
+
+    # Apply clustering to the MFCC features
+    clustered_features = apply_clustering(combined_features, n_clusters=N_CLUSTERS)
+
+    # Splitting the dataset into training, validation, and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(clustered_features, labels, test_size=test_size,
+                                                        stratify=labels, random_state=42)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=validation_size / (1 - test_size),
                                                       stratify=y_train, random_state=42)
+
     # Save the datasets
     save_dataset(X_train, y_train, 'train')
     save_dataset(X_test, y_test, 'test')
