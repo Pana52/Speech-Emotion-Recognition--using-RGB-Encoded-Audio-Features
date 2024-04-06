@@ -19,6 +19,8 @@ IMAGE_SUBFOLDER = 'images'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
+EPOCHS = 100
+PATIENCE = 10
 
 
 # Function to load, preprocess images, and extract features
@@ -95,11 +97,11 @@ def setup_ga():
     creator.create("Individual", list, fitness=creator.FitnessMax)
 
     toolbox = base.Toolbox()
-    toolbox.register("attr_activation", random.choice, ['relu', 'tanh', 'sigmoid'])
-    toolbox.register("attr_optimizer", random.choice, ['adam', 'sgd'])
-    toolbox.register("attr_float", random.choice, [0.0001, 0.001, 0.01])
+    toolbox.register("attr_float", random.choice, [0.0001, 0.0005, 0.001, 0.005, 0.01])
     toolbox.register("attr_int", random.choice, [16, 32, 64, 128, 256])
     toolbox.register("attr_neurons", random.choice, [128, 256, 512, 1024, 2048])
+    toolbox.register("attr_activation", random.choice, ['relu', 'tanh', 'sigmoid'])
+    toolbox.register("attr_optimizer", random.choice, ['adam', 'sgd'])
 
     toolbox.register("individual", tools.initCycle, creator.Individual,
                      (toolbox.attr_float, toolbox.attr_int, toolbox.attr_neurons,
@@ -115,12 +117,15 @@ def setup_ga():
 
 # Evaluation function for GA
 def evaluate(individual, features, labels):
-    learning_rate, batch_size, neurons = individual
-    model, batch_size = build_classification_model(NUM_CLASSES, learning_rate, int(batch_size), neurons,
-                                                   input_shape=(2048,))
+    # Unpack all five hyperparameters from the individual
+    learning_rate, batch_size, neurons, activation, optimizer_choice = individual
+
+    # Pass all unpacked hyperparameters to the model building function
+    model, batch_size = build_classification_model(NUM_CLASSES, learning_rate, int(batch_size), neurons, activation,
+                                                   optimizer_choice, input_shape=(2048,))
     X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1)
-    history = model.fit(X_train, y_train, batch_size=int(batch_size), epochs=10,
+    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, verbose=1)
+    history = model.fit(X_train, y_train, batch_size=int(batch_size), epochs=EPOCHS,
                         validation_data=(X_test, y_test), verbose=1, callbacks=[early_stopping])
     accuracy = np.max(history.history['val_accuracy'])
     return (accuracy,)
@@ -144,18 +149,17 @@ def main(data_dir):
 
     best_individual = tools.selBest(population, 1)[0]
     print("Best Individual = ", best_individual)
-    print("Best Hyperparameters: Learning Rate: {}, Batch Size: {}, Neurons: {}".format(best_individual[0],
-                                                                                        best_individual[1],
-                                                                                        best_individual[2]))
+    print("Best Hyperparameters: Learning Rate: {}, Batch Size: {}, Neurons: {}, Activation: {}, Optimizer: {}".format(
+        best_individual[0], best_individual[1], best_individual[2], best_individual[3], best_individual[4]))
 
     # Retrain model with the best hyperparameters
-    best_learning_rate, best_batch_size, best_neurons = best_individual
+    best_learning_rate, best_batch_size, best_neurons, best_activation, best_optimizer = best_individual
     model, _ = build_classification_model(NUM_CLASSES, best_learning_rate, best_batch_size, best_neurons,
-                                          input_shape=(2048,))
+                                          best_activation, best_optimizer, input_shape=(2048,))
 
     X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
-    early_stopping = EarlyStopping(monitor='val_loss', patience=5, verbose=1)
-    model.fit(X_train, y_train, batch_size=best_batch_size, epochs=10, validation_data=(X_test, y_test),
+    early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, verbose=1)
+    model.fit(X_train, y_train, batch_size=best_batch_size, epochs=EPOCHS, validation_data=(X_test, y_test),
               callbacks=[early_stopping])
 
     # Evaluate the best model

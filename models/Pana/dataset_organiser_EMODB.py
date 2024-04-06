@@ -49,6 +49,6 @@ def organize_emodb_dataset(source_directory, target_base_directory):
 
 # Example usage:
 organize_emodb_dataset('C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project '
-                       'KV6003BNN01/datasets/Vectors/EMODB/wav', 'C:/Users/Pana/Desktop/Northumbria/Final '
-                                                                 'Year/Individual Computing Project '
-                                                                 'KV6003BNN01/datasets/Mixed/EMODB/')
+                       'KV6003BNN01/datasets/original/EMODB/wav', 'C:/Users/Pana/Desktop/Northumbria/Final '
+                                                                  'Year/Individual Computing Project '
+                                                                  'KV6003BNN01/datasets/audio/EMODB/')
