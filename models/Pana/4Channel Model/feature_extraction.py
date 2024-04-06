@@ -4,10 +4,14 @@ from PIL import Image
 import numpy as np
 import librosa
 from sklearn.preprocessing import MinMaxScaler
+from scipy.ndimage import zoom
 
-DATASET_AUDIO = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/Audio/"
-DATASET_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/Images/"
-DATASET_4CHANNEL = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/4channel/"
+DATASET_AUDIO = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
+                "KV6003BNN01/datasets/Mixed/EMODB/Audio/"
+DATASET_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
+                 "KV6003BNN01/datasets/Mixed/EMODB/Images/"
+DATASET_4CHANNEL = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
+                   "KV6003BNN01/datasets/Mixed/EMODB/4Channels/"
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 
 
@@ -29,20 +33,22 @@ def extract_audio_features(audio_file_path):
 
 def process_features(features, target_size=(256, 256)):
     """
-    Process and reshape the features to fit the target resolution.
+    Improved processing of features to fit the target resolution, aiming for a more evenly distributed set
+    of values across the 256x256 space.
     """
-    # Scale features to [0, 1] range
-    scaler = MinMaxScaler()
-    features_scaled = scaler.fit_transform(features)
+    # Normalize features to a 0-1 range to match the intensity scale of an image
+    features_min = features.min()
+    features_max = features.max()
+    features_norm = (features - features_min) / (features_max - features_min)
 
-    # Resize feature matrix to target_size
-    # For simplicity, we'll flatten and then interpolate. Adjustments might be needed.
-    features_flat = features_scaled.flatten()
-    features_interp = np.interp(np.linspace(0, len(features_flat), num=target_size[0] * target_size[1]),
-                                range(len(features_flat)), features_flat)
-    features_reshaped = features_interp.reshape(target_size)
+    # Calculate zoom factors for both dimensions to match the target size
+    zoom_factor_y = target_size[0] / features_norm.shape[0]
+    zoom_factor_x = target_size[1] / features_norm.shape[1]
 
-    return features_reshaped
+    # Use scipy's zoom to resize the feature matrix to the target size
+    features_resized = zoom(features_norm, (zoom_factor_y, zoom_factor_x), order=1)  # Linear interpolation
+
+    return features_resized
 
 
 def add_features_to_image(mel_spectrogram_path, features, output_path):
