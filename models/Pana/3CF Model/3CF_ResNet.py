@@ -5,7 +5,7 @@ from keras import Input
 from keras_preprocessing.image import img_to_array, load_img
 from keras.applications.resnet import ResNet50, preprocess_input
 from keras.models import Model
-from keras.layers import Dense, GlobalAveragePooling2D
+from keras.layers import Dense, GlobalAveragePooling2D, Dropout
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
 from keras.optimizers import Adam
@@ -15,14 +15,14 @@ from sklearn.cluster import KMeans
 
 # Constants
 DATA_DIR = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/"
-IMAGE_SUBFOLDER = '3CF_Images'
+IMAGE_SUBFOLDER = 'Feature Images/MM_ME_CH/'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
-IMAGE_SIZE = (256, 256)  # Adjust based on your images' dimensions
+IMAGE_SIZE = (512, 512)  # Adjust based on your images' dimensions
 BATCH_SIZE = 32
 EPOCHS = 500
 PATIENCE = 50
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.001
 N_CLUSTERS = 10  # Number of clusters for K-means
 
 
@@ -51,9 +51,10 @@ def apply_clustering(features):
 
 
 # Initialize ResNet50 model for classification
-def build_classification_model(num_classes, input_shape=(2048,)):
+def build_classification_model(num_classes, input_shape=(2048,), dropout_rate=0.5):
     input_layer = Input(shape=input_shape)
-    x = Dense(1024, activation='relu')(input_layer)
+    x = Dense(2048, activation='relu')(input_layer)
+    x = Dropout(0.5)(x)  # Add dropout layer
     predictions = Dense(num_classes, activation='softmax')(x)
     model = Model(inputs=input_layer, outputs=predictions)
 

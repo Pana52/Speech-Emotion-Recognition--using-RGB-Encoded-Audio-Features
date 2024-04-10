@@ -9,7 +9,7 @@ from scipy.ndimage import zoom
 DATASET_AUDIO = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
                 "KV6003BNN01/datasets/Mixed/EMODB/Audio/"
 OUTPUT_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/Mixed/EMODB/3CF_Images/"
+                "KV6003BNN01/datasets/Mixed/EMODB/3CF_512/"
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 
 
@@ -22,7 +22,7 @@ def extract_audio_features(audio_file_path):
     y, sr = librosa.load(audio_file_path)
 
     # Extract features
-    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
+    mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=20)
     mel_spectrogram = librosa.feature.melspectrogram(y=y, sr=sr)
     chroma = librosa.feature.chroma_stft(y=y, sr=sr)
 
