@@ -15,7 +15,7 @@ import random
 
 # Constants
 DATA_DIR = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/"
-IMAGE_SUBFOLDER = 'Feature Images/CH_ME_MM'
+IMAGE_SUBFOLDER = 'Feature Images/ME_CH_MF'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (512, 512)

@@ -9,7 +9,7 @@ from scipy.ndimage import zoom
 DATASET_AUDIO = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
                 "KV6003BNN01/datasets/Mixed/EMODB/Audio/"
 OUTPUT_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/Mixed/EMODB/Feature Images/CH_ME_MM/"
+                "KV6003BNN01/datasets/Mixed/EMODB/Feature Images/ME_MF_CH/"
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 
 
@@ -114,5 +114,5 @@ def create_rgb_feature_dataset(audio_dir, output_dir, emotions, feature_order=[0
 # 0: MFCC
 # 1: Mel-Spectrogram
 # 2: Chroma
-feature_order = [2, 1, 0]
+feature_order = [1, 0, 2]
 create_rgb_feature_dataset(DATASET_AUDIO, OUTPUT_IMAGES, EMOTIONS, feature_order)
