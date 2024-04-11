@@ -49,6 +49,6 @@ def organize_ravdess_dataset(source_directory, target_base_directory):
 
 
 organize_ravdess_dataset('C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project '
-                         'KV6003BNN01/datasets/Vectors/RAVDESS/', 'C:/Users/Pana/Desktop/Northumbria/Final '
+                         'KV6003BNN01/datasets/original/RAVDESS/', 'C:/Users/Pana/Desktop/Northumbria/Final '
                                                                    'Year/Individual Computing Project '
-                                                                   'KV6003BNN01/datasets/Mixed/RAVDESS/')
+                                                                   'KV6003BNN01/datasets/audio/RAVDESS/')

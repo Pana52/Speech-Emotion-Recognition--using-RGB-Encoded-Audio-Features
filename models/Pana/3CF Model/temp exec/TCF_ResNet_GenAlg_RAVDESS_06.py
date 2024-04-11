@@ -14,9 +14,9 @@ from keras.layers import Input, Dense, GlobalAveragePooling2D, Dropout, Activati
 import random
 
 # Constants
-DATA_DIR = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/"
-IMAGE_SUBFOLDER = 'Feature Images/ME_MF_CH'
-EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+DATA_DIR = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/RAVDESS/"
+IMAGE_SUBFOLDER = 'MF_ME_CH'
+EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (512, 512)
 BATCH_SIZE = 32
@@ -184,7 +184,7 @@ def main():
         population = top_individuals + next_generation
 
     # Redirecting output to a text file
-    with open("optimization_results.txt", "w") as output_file:
+    with open(IMAGE_SUBFOLDER + "_optimization_results.txt", "w") as output_file:
         print(f"Optimization completed. Best Accuracy: {best_accuracy}", file=output_file)
         print(f"Best Hyperparameters: {best_hyperparams}", file=output_file)
 
