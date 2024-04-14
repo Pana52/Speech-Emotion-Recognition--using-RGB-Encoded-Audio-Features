@@ -3,7 +3,7 @@ from keras.layers import Input, Conv1D, BatchNormalization, Activation, Add, Max
 
 
 def residual_block(input_tensor, filters, kernel_size=3, stride=1):
-    """A ResNet-style residual block for 1D data."""
+    """A 3CF_ResNet-style residual block for 1D data."""
     # Main path
     x = Conv1D(filters, kernel_size=kernel_size, strides=stride, padding='same')(input_tensor)
     x = BatchNormalization()(x)
@@ -25,7 +25,7 @@ def residual_block(input_tensor, filters, kernel_size=3, stride=1):
 
 
 def build_resnet(input_shape, num_classes):
-    """Builds a ResNet-like model for 1D data."""
+    """Builds a 3CF_ResNet-like model for 1D data."""
     inputs = Input(shape=input_shape)
 
     x = Conv1D(64, kernel_size=7, strides=2, padding='same')(inputs)
@@ -33,7 +33,7 @@ def build_resnet(input_shape, num_classes):
     x = Activation('relu')(x)
     x = MaxPooling1D(pool_size=3, strides=2, padding='same')(x)
 
-    # Example ResNet blocks
+    # Example 3CF_ResNet blocks
     x = residual_block(x, filters=32, stride=1)
     x = residual_block(x, filters=32, stride=1)
 

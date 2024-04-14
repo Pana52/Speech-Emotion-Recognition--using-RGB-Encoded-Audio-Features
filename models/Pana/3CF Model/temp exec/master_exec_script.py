@@ -25,10 +25,6 @@ def run_scripts(script_list):
         else:
             print(f"Error in running {script}: {result.stderr}")
 
-        # Optionally, add a pause or delay if needed
-        # import time
-        # time.sleep(seconds)  # seconds between runs, if needed
-
 
 # Execute the function with the list of scripts
 run_scripts(scripts)

@@ -92,7 +92,7 @@ def load_and_preprocess_data(dataset_path):
     return train_test_split(X, y, test_size=0.2, random_state=42), class_labels
 
 
-# Function to create the model with DenseNet
+# Function to create the model with 3CF_DenseNet
 def create_model(input_shape, num_classes):
     input_tensor = Input(shape=input_shape)  # Ensure input_shape matches your dataset
     base_model = DenseNet121(include_top=False, weights='imagenet', input_tensor=input_tensor, pooling='avg')  # Note: pooling='avg' adds global average pooling

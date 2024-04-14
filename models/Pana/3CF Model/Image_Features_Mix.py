@@ -7,13 +7,13 @@ from sklearn.preprocessing import MinMaxScaler
 from scipy.ndimage import zoom
 
 DATASET_AUDIO = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/audio/RAVDESS"
+                "KV6003BNN01/datasets/audio/EMODB"
 OUTPUT_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/Mixed/RAVDESS/CH_ME_MF/"
+                "KV6003BNN01/datasets/Mixed/EMODB/256p/MF_ME_CH"
 # EMODB
-# EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 # RAVDESS
-EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
+# EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 
 
 # Feature extraction function remains the same
@@ -33,7 +33,7 @@ def extract_audio_features(audio_file_path):
 
 
 # Updating the feature processing function for direct greyscale image preparation
-def process_features(features, target_size=(512, 512)):
+def process_features(features, target_size=(256, 256)):
     """
     Process each feature type to fit the target resolution, including normalization and resizing.
     Each feature is treated as a greyscale image.
@@ -117,5 +117,5 @@ def create_rgb_feature_dataset(audio_dir, output_dir, emotions, feature_order=[0
 # 0: MFCC
 # 1: Mel-Spectrogram
 # 2: Chroma
-feature_order = [2, 1, 0]
+feature_order = [0, 1, 2]
 create_rgb_feature_dataset(DATASET_AUDIO, OUTPUT_IMAGES, EMOTIONS, feature_order)

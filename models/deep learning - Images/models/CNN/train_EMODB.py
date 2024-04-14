@@ -82,7 +82,7 @@ def load_and_preprocess_data(dataset_path):
     return train_test_split(X, y, test_size=0.2, random_state=42), class_labels
 
 
-# Function to create the CNN model
+# Function to create the 3CF_CNN model
 def create_model(input_shape, num_classes):
     model = Sequential([
         Conv2D(32, (3, 3), activation='relu', input_shape=input_shape),

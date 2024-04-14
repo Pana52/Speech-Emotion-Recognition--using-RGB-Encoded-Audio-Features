@@ -91,14 +91,14 @@ def load_and_preprocess_data(dataset_path):
     return train_test_split(X, y, test_size=0.2, random_state=42), class_labels
 
 
-# Function to create the model with DenseNet
+# Function to create the model with 3CF_DenseNet
 def create_model(input_shape, num_classes):
     input_tensor = Input(shape=INPUT_SIZE)
     base_model = DenseNet121(include_top=False, weights='imagenet', input_tensor=input_tensor)
     # Making the base model non-trainable (Optional, depending on whether you want to fine-tune)
     base_model.trainable = False
 
-    # Adding custom layers on top of DenseNet
+    # Adding custom layers on top of 3CF_DenseNet
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
     x = Dense(128, activation='relu')(x)
