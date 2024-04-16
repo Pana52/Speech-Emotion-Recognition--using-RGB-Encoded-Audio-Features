@@ -2,13 +2,30 @@ import subprocess
 
 # List of Python scripts to be executed
 scripts = [
-    "TCF_ResNet_GenAlg_RAVDESS_01.py",
-    "TCF_ResNet_GenAlg_RAVDESS_02.py",
-    "TCF_ResNet_GenAlg_RAVDESS_03.py",
-    "TCF_ResNet_GenAlg_RAVDESS_04.py",
-    "TCF_ResNet_GenAlg_RAVDESS_05.py",
-    "TCF_ResNet_GenAlg_RAVDESS_06.py",
-    # Add more scripts as needed
+    "TCF_CNN_GenAlg_CH_ME_MF.py",
+    "TCF_CNN_GenAlg_CH_MF_ME.py",
+    "TCF_CNN_GenAlg_ME_CH_MF.py",
+    "TCF_CNN_GenAlg_ME_MF_CH.py",
+    "TCF_CNN_GenAlg_MF_CH_ME.py",
+    "TCF_CNN_GenAlg_MF_ME_CH.py",
+    "TCF_DenseNet_GenAlg_CH_ME_MF.py",
+    "TCF_DenseNet_GenAlg_CH_MF_ME.py",
+    "TCF_DenseNet_GenAlg_ME_CH_MF.py",
+    "TCF_DenseNet_GenAlg_ME_MF_CH.py",
+    "TCF_DenseNet_GenAlg_MF_CH_ME.py",
+    "TCF_DenseNet_GenAlg_MF_ME_CH.py",
+    "TCF_ResNet_GenAlg_CH_ME_MF.py",
+    "TCF_ResNet_GenAlg_CH_MF_ME.py",
+    "TCF_ResNet_GenAlg_ME_CH_MF.py",
+    "TCF_ResNet_GenAlg_ME_MF_CH.py",
+    "TCF_ResNet_GenAlg_MF_CH_ME.py",
+    "TCF_ResNet_GenAlg_MF_ME_CH.py",
+    "TCF_VGG_GenAlg_CH_ME_MF.py",
+    "TCF_VGG_GenAlg_CH_MF_ME.py",
+    "TCF_VGG_GenAlg_ME_CH_MF.py",
+    "TCF_VGG_GenAlg_ME_MF_CH.py",
+    "TCF_VGG_GenAlg_MF_CH_ME.py",
+    "TCF_VGG_GenAlg_MF_ME_CH.py"
 ]
 
 

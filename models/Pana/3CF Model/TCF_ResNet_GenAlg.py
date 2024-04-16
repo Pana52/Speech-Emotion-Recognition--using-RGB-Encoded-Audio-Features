@@ -2,7 +2,7 @@
 import os
 import numpy as np
 from keras_preprocessing.image import img_to_array, load_img
-from keras.applications.densenet import DenseNet121, preprocess_input  # Using DenseNet121
+from keras.applications.resnet import ResNet50, preprocess_input
 from keras.models import Model
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
@@ -16,14 +16,14 @@ import random
 # Constants
 DATASET = 'EMODB'
 DATA_DIR = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/" + DATASET +"/256p/"
-IMAGE_SUBFOLDER = 'ME_CH_MF'
-MODEL = 'DENSENET'
+IMAGE_SUBFOLDER = 'CH_ME_MF'
+MODEL = 'RESNET'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32
-EPOCHS = 500
-PATIENCE = 50
+EPOCHS = 50
+PATIENCE = 10
 
 
 def initialize_population(pop_size):
@@ -75,7 +75,7 @@ def load_and_extract_features(img_path, feature_model):
 
 
 def build_feature_extractor():
-    base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
+    base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
     model = Model(inputs=base_model.input, outputs=GlobalAveragePooling2D()(base_model.output))
     return model
 
@@ -89,12 +89,16 @@ def apply_clustering(features, n_clusters):
 def build_classification_model(num_classes, input_shape, hyperparams):
     input_layer = Input(shape=input_shape)
     x = Dense(hyperparams['dense_neurons'])(input_layer)
+
+    # Handling different activation functions
     if hyperparams['activation'] == 'leaky_relu':
         x = LeakyReLU()(x)
     elif hyperparams['activation'] == 'elu':
         x = ELU()(x)
     else:
+        # For standard activations like 'relu', 'tanh', 'sigmoid'
         x = Activation(hyperparams['activation'])(x)
+
     x = Dropout(hyperparams['dropout_rate'])(x)
     predictions = Dense(num_classes, activation='softmax')(x)
     model = Model(inputs=input_layer, outputs=predictions)
@@ -125,7 +129,7 @@ def train_and_evaluate(feature_model, hyperparams, features, labels):
     cluster_labels, _ = apply_clustering(features, hyperparams['n_clusters'])
 
     X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.2, random_state=42)
-    model = build_classification_model(NUM_CLASSES, (1024,), hyperparams)  # Changed input shape to (1024,)
+    model = build_classification_model(NUM_CLASSES, (2048,), hyperparams)
     early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, verbose=0, restore_best_weights=True)
     model.fit(X_train, y_train, batch_size=hyperparams['batch_size'], epochs=EPOCHS,
               validation_data=(X_test, y_test), callbacks=[early_stopping], verbose=0)

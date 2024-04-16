@@ -14,11 +14,11 @@ from keras.callbacks import EarlyStopping
 from sklearn.cluster import KMeans
 
 # Constants
-DATA_DIR = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/"
-IMAGE_SUBFOLDER = 'Feature Images/MM_ME_CH/'
+DATA_DIR = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/Augmented/256p"
+IMAGE_SUBFOLDER = 'CH_ME_MF/'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
-IMAGE_SIZE = (512, 512)  # Adjust based on your images' dimensions
+IMAGE_SIZE = (256, 256)  # Adjust based on your images' dimensions
 BATCH_SIZE = 32
 EPOCHS = 500
 PATIENCE = 50
