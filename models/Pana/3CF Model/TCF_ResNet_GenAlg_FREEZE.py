@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from keras import Input
 from keras_preprocessing.image import img_to_array, load_img
 from keras.applications.resnet import ResNet50, preprocess_input
 from keras.models import Model
@@ -10,7 +11,7 @@ from sklearn.metrics import classification_report
 from sklearn.preprocessing import OneHotEncoder
 from keras.callbacks import EarlyStopping
 from sklearn.cluster import KMeans
-from keras.layers import Input, Dense, GlobalAveragePooling2D, Dropout, Activation, LeakyReLU, ELU
+from keras.layers import Dense, GlobalAveragePooling2D, Dropout, Activation, LeakyReLU, ELU
 import random
 
 # Constants
@@ -71,7 +72,7 @@ def load_and_extract_features(img_path, feature_model):
     img = np.expand_dims(img, axis=0)
     img = preprocess_input(img)
     features = feature_model.predict(img)
-    return np.squeeze(features)
+    return np.squeeze(features).flatten()  # Ensure features are flattened
 
 
 def build_feature_extractor():
@@ -86,27 +87,27 @@ def augment_features_with_clusters(features, cluster_labels):
     cluster_labels_one_hot = encoder.fit_transform(cluster_labels.reshape(-1, 1))
 
     # Concatenate original features with one-hot encoded cluster labels
-    augmented_features = np.concatenate([features, cluster_labels_one_hot], axis=1)
+    # Ensure the final shape is suitable for the model input
+    augmented_features = np.concatenate([features.reshape(features.shape[0], -1), cluster_labels_one_hot], axis=1)
     return augmented_features
 
 
 def apply_clustering(features, n_clusters):
+    if features.ndim != 2:
+        features = features.reshape(features.shape[0], -1)  # Reshape to 2D if necessary
     kmeans = KMeans(n_clusters=n_clusters, random_state=42)
     cluster_labels = kmeans.fit_predict(features)
     return cluster_labels, kmeans.cluster_centers_
 
 
-def build_classification_model(num_classes, input_shape, hyperparams):
-    input_layer = Input(shape=input_shape)
-    x = Dense(hyperparams['dense_neurons'])(input_layer)
-
-    # Handling different activation functions
+def build_classification_model(num_classes, feature_length, hyperparams):
+    input_layer = Input(shape=(feature_length,))
+    x = Dense(hyperparams['dense_neurons'], activation=None)(input_layer)
     if hyperparams['activation'] == 'leaky_relu':
         x = LeakyReLU()(x)
     elif hyperparams['activation'] == 'elu':
         x = ELU()(x)
     else:
-        # For standard activations like 'relu', 'tanh', 'sigmoid'
         x = Activation(hyperparams['activation'])(x)
 
     x = Dropout(hyperparams['dropout_rate'])(x)
@@ -125,33 +126,40 @@ def load_dataset_and_extract_features(data_dir, feature_model):
         emotion_image_path = os.path.join(data_dir, IMAGE_SUBFOLDER, emotion)
         for image_file in os.listdir(emotion_image_path):
             full_image_path = os.path.join(emotion_image_path, image_file)
-            img_features = load_and_extract_features(full_image_path, feature_model)
-            features.append(img_features)
+            feature = load_and_extract_features(full_image_path, feature_model)
+            features.append(feature)  # Ensure that each feature is flat
             labels.append(EMOTIONS.index(emotion))
 
     features = np.array(features)
+    if features.ndim > 2:
+        features = features.reshape(features.shape[0], -1)  # Additional check to ensure 2D
     labels = to_categorical(labels, num_classes=NUM_CLASSES)
     return features, labels
 
 
-def train_and_evaluate(feature_model, hyperparams, features, labels):
+def train_and_evaluate(hyperparams, features, labels, unfreeze=False, layers_to_unfreeze=3):
     # Apply clustering
     cluster_labels, _ = apply_clustering(features, hyperparams['n_clusters'])
     augmented_features = augment_features_with_clusters(features, cluster_labels)
 
-    # Adjust the data split to use augmented features
+    # Split data into training and test sets
     X_train, X_test, y_train, y_test = train_test_split(augmented_features, labels, test_size=0.2, random_state=42)
 
-    # Update model creation to handle new input shape
-    model_input_shape = X_train.shape[1]  # Updated input shape
-    model = build_classification_model(NUM_CLASSES, (model_input_shape,), hyperparams)
+    # Prepare the correct input shape for the model, it must match the augmented feature shape
+    model_input_shape = X_train.shape[1]  # This should capture the correct feature length
 
+    # Update model creation to handle new input shape and include unfreezing logic
+    model = build_classification_model(NUM_CLASSES, model_input_shape, hyperparams)
+
+    # Set up early stopping to prevent overfitting
     early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, verbose=0, restore_best_weights=True)
-    model.fit(X_train, y_train, batch_size=hyperparams['batch_size'], epochs=EPOCHS,
-              validation_data=(X_test, y_test), callbacks=[early_stopping], verbose=0)
+    model.fit(X_train, y_train, batch_size=hyperparams['batch_size'], epochs=EPOCHS, validation_data=(X_test, y_test),
+              callbacks=[early_stopping], verbose=0)
+
+    # Evaluate the model on the test set
     _, accuracy = model.evaluate(X_test, y_test, verbose=0)
 
-    # Get predictions
+    # Get predictions and labels for accuracy comparison
     predictions = model.predict(X_test)
     y_pred_labels = np.argmax(predictions, axis=1)
     y_true_labels = np.argmax(y_test, axis=1)
@@ -164,10 +172,10 @@ def main():
     NUM_GENERATIONS = 3
     NUM_PARENTS = 3
 
-    population = initialize_population(POPULATION_SIZE)
-    feature_model = build_feature_extractor()
+    feature_model = ResNet50(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
     features, labels = load_dataset_and_extract_features(DATA_DIR, feature_model)
 
+    population = initialize_population(POPULATION_SIZE)
     best_accuracy = 0
     best_hyperparams = None
     best_y_true = None
@@ -178,7 +186,7 @@ def main():
 
         generation_accuracies = []
         for individual in population:
-            accuracy, y_true_labels, y_pred_labels = train_and_evaluate(feature_model, individual, features, labels)
+            accuracy, y_true_labels, y_pred_labels = train_and_evaluate(individual, features, labels)
             generation_accuracies.append(accuracy)
 
             if accuracy > best_accuracy:
@@ -201,7 +209,7 @@ def main():
 
         population = top_individuals + next_generation
 
-    with open(f"CNN_{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_optimization_results_01.txt", "w") as output_file:
+    with open(f"CNN_{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_optimization_results_02.txt", "w") as output_file:
         print(f"Optimization completed. Best Accuracy: {best_accuracy}", file=output_file)
         print(f"Best Hyperparameters: {best_hyperparams}", file=output_file)
 
