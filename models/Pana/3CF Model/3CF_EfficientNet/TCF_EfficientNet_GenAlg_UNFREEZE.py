@@ -2,7 +2,7 @@ import os
 import numpy as np
 from keras import Input
 from keras_preprocessing.image import img_to_array, load_img
-from keras.applications.resnet import ResNet50, preprocess_input
+from keras.applications.efficientnet import EfficientNetB0, preprocess_input
 from keras.models import Model
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
@@ -18,7 +18,8 @@ import random
 DATASET = 'EMODB'
 DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
 IMAGE_SUBFOLDER = 'CH_ME_MF'
-MODEL = 'RESNET'
+MODEL = 'EFFICIENTNET'
+MODE = 'UNFREEZE'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
@@ -36,7 +37,9 @@ def initialize_population(pop_size):
             'dense_neurons': np.random.choice([128, 256, 512, 1024]),
             'activation': np.random.choice(['relu', 'tanh', 'sigmoid', 'leaky_relu', 'elu']),
             'dropout_rate': np.random.uniform(0.01, 0.5),
-            'n_clusters': np.random.randint(2, 20)
+            'n_clusters': np.random.randint(2, 20),
+            'unfreeze': np.random.choice([True, False]),
+            'layers_to_unfreeze': np.random.choice([2, 3, 4, 5])
         }
         population.append(individual)
     return population
@@ -76,7 +79,7 @@ def load_and_extract_features(img_path, feature_model):
 
 
 def build_feature_extractor():
-    base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
+    base_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
     model = Model(inputs=base_model.input, outputs=GlobalAveragePooling2D()(base_model.output))
     return model
 
@@ -100,8 +103,9 @@ def apply_clustering(features, n_clusters):
     return cluster_labels, kmeans.cluster_centers_
 
 
-def build_classification_model(num_classes, feature_length, hyperparams):
-    input_layer = Input(shape=(feature_length,))
+def build_classification_model(num_classes, feature_length, hyperparams, unfreeze=False, layers_to_unfreeze=0):
+    # No need to load a CNN base model since we are using a fully connected network
+    input_layer = Input(shape=(feature_length,))  # Adjusted to take flat input
     x = Dense(hyperparams['dense_neurons'], activation=None)(input_layer)
     if hyperparams['activation'] == 'leaky_relu':
         x = LeakyReLU()(x)
@@ -112,9 +116,14 @@ def build_classification_model(num_classes, feature_length, hyperparams):
 
     x = Dropout(hyperparams['dropout_rate'])(x)
     predictions = Dense(num_classes, activation='softmax')(x)
+
+    # Create the full model
     model = Model(inputs=input_layer, outputs=predictions)
+
+    # Compile the model
     model.compile(optimizer=Adam(learning_rate=hyperparams['learning_rate']),
                   loss='categorical_crossentropy', metrics=['accuracy'])
+
     return model
 
 
@@ -149,7 +158,7 @@ def train_and_evaluate(hyperparams, features, labels, unfreeze=False, layers_to_
     model_input_shape = X_train.shape[1]  # This should capture the correct feature length
 
     # Update model creation to handle new input shape and include unfreezing logic
-    model = build_classification_model(NUM_CLASSES, model_input_shape, hyperparams)
+    model = build_classification_model(NUM_CLASSES, model_input_shape, hyperparams, unfreeze=unfreeze, layers_to_unfreeze=layers_to_unfreeze)
 
     # Set up early stopping to prevent overfitting
     early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, verbose=0, restore_best_weights=True)
@@ -172,7 +181,7 @@ def main():
     NUM_GENERATIONS = 3
     NUM_PARENTS = 3
 
-    feature_model = ResNet50(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
+    feature_model = EfficientNetB0(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
     features, labels = load_dataset_and_extract_features(DATA_DIR, feature_model)
 
     population = initialize_population(POPULATION_SIZE)
@@ -186,7 +195,10 @@ def main():
 
         generation_accuracies = []
         for individual in population:
-            accuracy, y_true_labels, y_pred_labels = train_and_evaluate(individual, features, labels)
+            accuracy, y_true_labels, y_pred_labels = train_and_evaluate(individual, features, labels,
+                                                                        unfreeze=individual['unfreeze'],
+                                                                        layers_to_unfreeze=individual[
+                                                                            'layers_to_unfreeze'])
             generation_accuracies.append(accuracy)
 
             if accuracy > best_accuracy:
@@ -209,7 +221,7 @@ def main():
 
         population = top_individuals + next_generation
 
-    with open(f"CNN_{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_optimization_results_02.txt", "w") as output_file:
+    with open(f"CNN_{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_{MODE}optimization_results.txt", "w") as output_file:
         print(f"Optimization completed. Best Accuracy: {best_accuracy}", file=output_file)
         print(f"Best Hyperparameters: {best_hyperparams}", file=output_file)
 

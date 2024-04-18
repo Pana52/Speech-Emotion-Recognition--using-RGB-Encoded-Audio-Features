@@ -1,5 +1,7 @@
 # Let's outline the functions and structure needed for the process
 import os
+import random
+
 from PIL import Image
 import numpy as np
 import librosa
@@ -7,7 +9,7 @@ from sklearn.preprocessing import MinMaxScaler
 from scipy.ndimage import zoom
 
 DATASET_AUDIO = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/audio/RAVDESS/"
-OUTPUT_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/RAVDESS/256p/3CF/CH_MF_ME"
+OUTPUT_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/RAVDESS/256p/3CF/3cf_random"
 # EMODB
 # EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 # RAVDESS
@@ -79,21 +81,10 @@ def create_feature_image(features, output_path, channel_order=[0, 1, 2]):
 
 
 # Update the main dataset creation function to include the feature order parameter
-def create_rgb_feature_dataset(audio_dir, output_dir, emotions, feature_order=[0, 1, 2]):
-    """
-    Iterate over audio files, extract features, process them, generate RGB images with customizable feature order, and save in a structured dataset.
-
-    Parameters:
-    - audio_dir: Directory containing the audio files, organized by emotion.
-    - output_dir: Output directory for the RGB images, organized by emotion.
-    - emotions: List of emotions to process.
-    - feature_order: Order in which to arrange the extracted features in the RGB channels.
-    """
+def create_rgb_feature_dataset(audio_dir, output_dir, emotions):
     for emotion in emotions:
         emotion_audio_dir = os.path.join(audio_dir, emotion)
         emotion_output_dir = os.path.join(output_dir, emotion)
-
-        # Create the output directory if it doesn't exist
         os.makedirs(emotion_output_dir, exist_ok=True)
 
         for filename in os.listdir(emotion_audio_dir):
@@ -107,13 +98,12 @@ def create_rgb_feature_dataset(audio_dir, output_dir, emotions, feature_order=[0
                 # Process features
                 processed_features = process_features([mfccs, mel_spectrogram, chroma])
 
-                # Create and save the feature image with the specified feature order
+                # Generate a random feature order
+                feature_order = [0, 1, 2]
+                random.shuffle(feature_order)
+
+                # Create and save the feature image with the randomized feature order
                 create_feature_image(processed_features, output_path, feature_order)
 
 
-# Example usage (commented out for development):
-# 0: MFCC
-# 1: Mel-Spectrogram
-# 2: Chroma
-feature_order = [2, 0, 1]
-create_rgb_feature_dataset(DATASET_AUDIO, OUTPUT_IMAGES, EMOTIONS, feature_order)
+create_rgb_feature_dataset(DATASET_AUDIO, OUTPUT_IMAGES, EMOTIONS)

@@ -2,7 +2,7 @@ import os
 import numpy as np
 from keras import Input
 from keras_preprocessing.image import img_to_array, load_img
-from keras.applications.resnet import ResNet50, preprocess_input
+from keras.applications.densenet import DenseNet121, preprocess_input
 from keras.models import Model
 from sklearn.model_selection import train_test_split
 from keras.utils import to_categorical
@@ -18,7 +18,8 @@ import random
 DATASET = 'EMODB'
 DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
 IMAGE_SUBFOLDER = 'CH_ME_MF'
-MODEL = 'RESNET'
+MODEL = 'DENSENET'
+MODE = 'UNFREEZE'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
@@ -78,7 +79,7 @@ def load_and_extract_features(img_path, feature_model):
 
 
 def build_feature_extractor():
-    base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
+    base_model = DenseNet121(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
     model = Model(inputs=base_model.input, outputs=GlobalAveragePooling2D()(base_model.output))
     return model
 
@@ -180,7 +181,7 @@ def main():
     NUM_GENERATIONS = 3
     NUM_PARENTS = 3
 
-    feature_model = ResNet50(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
+    feature_model = DenseNet121(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
     features, labels = load_dataset_and_extract_features(DATA_DIR, feature_model)
 
     population = initialize_population(POPULATION_SIZE)
@@ -220,7 +221,7 @@ def main():
 
         population = top_individuals + next_generation
 
-    with open(f"CNN_{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_optimization_results_01.txt", "w") as output_file:
+    with open(f"CNN_{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_{MODE}optimization_results.txt", "w") as output_file:
         print(f"Optimization completed. Best Accuracy: {best_accuracy}", file=output_file)
         print(f"Best Hyperparameters: {best_hyperparams}", file=output_file)
 

@@ -2,8 +2,15 @@ import subprocess
 
 # List of Python scripts to be executed
 scripts = [
-    "TCF_ResNet_GenAlg.py",
-    "TCF_ResNet_GenAlg_UNFREEZE.py"
+    "TCF_CNN_GenAlg.py",
+    "TFC_DenseNet_GenAlg_FREEZE.py",
+    "TFC_DenseNet_GenAlg_UNFFREEZE.py",
+    "TCF_EfficientNet_GenAlg_FREEZE.py",
+    "TCF_EfficientNet_GenAlg_UNFREEZE.py",
+    "TCF_ResNet_GenAlg_FREEZE.py",
+    "TCF_ResNet_GenAlg_UNFREEZE.py",
+    "TCF_VGG_GenAlg_FREEZE.py",
+    "TCF_VGG_GenAlg_UNFREEZE.py",
 ]
 
 
