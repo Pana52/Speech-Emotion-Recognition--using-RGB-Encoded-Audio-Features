@@ -16,10 +16,10 @@ import random
 
 # Constants
 DATASET = 'EMODB'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
 IMAGE_SUBFOLDER = 'CH_ME_MF'
 MODEL = 'RESNET'
-MODE = 'UNFREEZE'
+MODE = 'UNFREEZE_4CLASS'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
@@ -37,7 +37,9 @@ def initialize_population(pop_size):
             'dense_neurons': np.random.choice([64, 128, 256, 512]),
             'activation': np.random.choice(['relu', 'tanh', 'sigmoid', 'leaky_relu', 'elu']),
             'dropout_rate': np.random.uniform(0.01, 0.5),
-            'n_clusters': np.random.randint(2, 20)
+            'n_clusters': np.random.randint(2, 20),
+            'unfreeze': random.choice([True, False]),  # Randomly decide to unfreeze or not
+            'layers_to_unfreeze': np.random.randint(0, 5)  # Random number of layers to unfreeze
         }
         population.append(individual)
     return population
@@ -64,6 +66,10 @@ def mutate(child):
         child[mutation_param] = np.random.uniform(0.01, 0.5)
     elif mutation_param == 'n_clusters':
         child[mutation_param] = np.random.randint(2, 20)
+    elif mutation_param == 'unfreeze':
+        child[mutation_param] = not child[mutation_param]  # Toggle the unfreeze state
+    elif mutation_param == 'layers_to_unfreeze':
+        child[mutation_param] = np.random.randint(0, 5)  # Random number of layers to unfreeze
     return child
 
 

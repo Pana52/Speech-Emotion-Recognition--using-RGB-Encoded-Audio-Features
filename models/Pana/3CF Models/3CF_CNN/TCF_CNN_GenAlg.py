@@ -13,11 +13,16 @@ import random
 
 # Constants
 DATASET = 'EMODB'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
-IMAGE_SUBFOLDER = '3cf_random'
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
+IMAGE_SUBFOLDER = 'ME_MF_CH'
 MODEL = 'CNN'
-MODE = 'CUSTOM'
-EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+MODE = 'CUSTOM_4CLASS'
+# ALL CLASSES
+# EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+
+# 4 CLASSES
+EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
+
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32

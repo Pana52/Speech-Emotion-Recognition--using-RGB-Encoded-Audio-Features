@@ -17,7 +17,7 @@ import random
 # Constants
 DATASET = 'EMODB'
 DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
-IMAGE_SUBFOLDER = 'CH_ME_MF'
+IMAGE_SUBFOLDER = 'ME_MF_CH'
 MODEL = 'DENSENET'
 MODE = 'UNFREEZE'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
@@ -37,7 +37,9 @@ def initialize_population(pop_size):
             'dense_neurons': np.random.choice([64, 128, 256, 512]),
             'activation': np.random.choice(['relu', 'tanh', 'sigmoid', 'leaky_relu', 'elu']),
             'dropout_rate': np.random.uniform(0.01, 0.5),
-            'n_clusters': np.random.randint(2, 20)
+            'n_clusters': np.random.randint(2, 20),
+            'unfreeze': random.choice([True, False]),  # Randomly decide to unfreeze or not
+            'layers_to_unfreeze': np.random.randint(0, 5)  # Random number of layers to unfreeze
         }
         population.append(individual)
     return population
@@ -64,6 +66,10 @@ def mutate(child):
         child[mutation_param] = np.random.uniform(0.01, 0.5)
     elif mutation_param == 'n_clusters':
         child[mutation_param] = np.random.randint(2, 20)
+    elif mutation_param == 'unfreeze':
+        child[mutation_param] = not child[mutation_param]  # Toggle the unfreeze state
+    elif mutation_param == 'layers_to_unfreeze':
+        child[mutation_param] = np.random.randint(0, 5)  # Random number of layers to unfreeze
     return child
 
 
@@ -156,7 +162,8 @@ def train_and_evaluate(hyperparams, features, labels, unfreeze=False, layers_to_
     model_input_shape = X_train.shape[1]  # This should capture the correct feature length
 
     # Update model creation to handle new input shape and include unfreezing logic
-    model = build_classification_model(NUM_CLASSES, model_input_shape, hyperparams, unfreeze=unfreeze, layers_to_unfreeze=layers_to_unfreeze)
+    model = build_classification_model(NUM_CLASSES, model_input_shape, hyperparams, unfreeze=unfreeze,
+                                       layers_to_unfreeze=layers_to_unfreeze)
 
     # Set up early stopping to prevent overfitting
     early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, verbose=0, restore_best_weights=True)

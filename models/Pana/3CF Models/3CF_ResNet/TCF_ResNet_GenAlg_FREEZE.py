@@ -16,10 +16,10 @@ import random
 
 # Constants
 DATASET = 'EMODB'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
 IMAGE_SUBFOLDER = 'CH_ME_MF'
 MODEL = 'RESNET'
-MODE = 'FREEZE'
+MODE = 'FREEZE_4CLASS'
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)

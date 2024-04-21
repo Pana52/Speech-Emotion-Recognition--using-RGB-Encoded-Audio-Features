@@ -17,10 +17,14 @@ import random
 # Constants
 DATASET = 'EMODB'
 DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
-IMAGE_SUBFOLDER = 'ME_MF_CH'
+IMAGE_SUBFOLDER = 'CH_ME_MF'
 MODEL = 'DENSENET'
 MODE = 'FREEZE'
-EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+# ALL CLASSES
+# EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+
+# 4 CLASSES
+EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32
