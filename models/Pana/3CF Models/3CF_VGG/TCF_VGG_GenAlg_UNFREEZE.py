@@ -16,11 +16,15 @@ import random
 
 # Constants
 DATASET = 'EMODB'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
 IMAGE_SUBFOLDER = 'CH_ME_MF'
 MODEL = 'VGG'
-MODE = 'UNFREEZE'
-EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+MODE = 'UNFREEZE_4CLASS'
+# ALL CLASSES
+# EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+
+# 4 CLASSES
+EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32
@@ -225,7 +229,7 @@ def main():
 
         population = top_individuals + next_generation
 
-    with open(f"{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_{MODE}optimization_results.txt", "w") as output_file:
+    with open(f"{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_{MODE}_optimization_results.txt", "w") as output_file:
         print(f"Optimization completed. Best Accuracy: {best_accuracy}", file=output_file)
         print(f"Best Hyperparameters: {best_hyperparams}", file=output_file)
 
