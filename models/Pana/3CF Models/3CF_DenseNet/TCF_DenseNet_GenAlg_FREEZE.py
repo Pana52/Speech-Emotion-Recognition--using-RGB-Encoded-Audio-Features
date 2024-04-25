@@ -13,18 +13,26 @@ from keras.callbacks import EarlyStopping
 from sklearn.cluster import KMeans
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout, Activation, LeakyReLU, ELU
 import random
+import tensorflow as tf
+import argparse
 
 # Constants
-DATASET = 'EMODB'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
+DATASET = 'RAVDESS'
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
 IMAGE_SUBFOLDER = 'CH_ME_MF'
 MODEL = 'DENSENET'
-MODE = 'FREEZE'
+MODE = 'FREEZE_4CLASS'
 # ALL CLASSES
+# EMODB
 # EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+# RAVDESS
+# EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 
 # 4 CLASSES
-EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
+# EMODB
+# EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
+# RAVDESS
+EMOTIONS = ['angry', 'happy', 'neutral', 'sad']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32
@@ -176,6 +184,26 @@ def main():
     POPULATION_SIZE = 10
     NUM_GENERATIONS = 20
     NUM_PARENTS = 5
+
+    parser = argparse.ArgumentParser(description="TensorFlow GPU Configuration Example")
+    parser.add_argument('--mode', type=str, default='cpu', choices=['gpu', 'cpu'],
+                        help='Select mode of execution: GPU or CPU')
+    args = parser.parse_args()
+
+    if args.mode == 'gpu':
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        if gpus:
+            try:
+                for gpu in gpus:
+                    tf.config.experimental.set_memory_growth(gpu, True)
+                print("Running on GPU.")
+            except RuntimeError as e:
+                print(e)
+        else:
+            print("No GPU found, falling back to CPU.")
+    elif args.mode == 'cpu':
+        tf.config.set_visible_devices([], 'GPU')
+        print("Running on CPU mode.")
 
     feature_model = DenseNet121(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
     features, labels = load_dataset_and_extract_features(DATA_DIR, feature_model)

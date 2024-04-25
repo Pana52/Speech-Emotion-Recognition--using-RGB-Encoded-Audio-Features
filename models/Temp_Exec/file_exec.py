@@ -16,18 +16,18 @@ def execute_python_files_sequentially(file_list):
 
 
 # Example file list
-files_to_execute = ["TCF_ResNet_GenAlg_UNFREEZE_01.py",
-                    "TCF_ResNet_GenAlg_UNFREEZE_02.py",
-                    "TCF_ResNet_GenAlg_UNFREEZE_03.py",
-                    "TCF_ResNet_GenAlg_UNFREEZE_04.py",
-                    "TCF_ResNet_GenAlg_UNFREEZE_05.py",
-                    "TCF_ResNet_GenAlg_UNFREEZE_06.py",
-                    "TCF_VGG_GenAlg_UNFREEZE_01.py",
-                    "TCF_VGG_GenAlg_UNFREEZE_02.py",
-                    "TCF_VGG_GenAlg_UNFREEZE_03.py",
-                    "TCF_VGG_GenAlg_UNFREEZE_04.py",
-                    "TCF_VGG_GenAlg_UNFREEZE_05.py",
-                    "TCF_VGG_GenAlg_UNFREEZE_06.py",
+files_to_execute = ["TCF_CNN_GenAlg_01.py",
+                    "TCF_CNN_GenAlg_02.py",
+                    "TCF_CNN_GenAlg_03.py",
+                    "TCF_CNN_GenAlg_04.py",
+                    "TCF_CNN_GenAlg_05.py",
+                    "TCF_CNN_GenAlg_06.py",
+                    "TCF_DenseNet_GenAlg_FREEZE_01.py",
+                    "TCF_DenseNet_GenAlg_FREEZE_02.py",
+                    "TCF_DenseNet_GenAlg_FREEZE_03.py",
+                    "TCF_DenseNet_GenAlg_FREEZE_04.py",
+                    "TCF_DenseNet_GenAlg_FREEZE_05.py",
+                    "TCF_DenseNet_GenAlg_FREEZE_06.py",
                     ]
 
 # Uncomment the following line to execute the function:
