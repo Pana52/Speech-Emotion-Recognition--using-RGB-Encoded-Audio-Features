@@ -13,20 +13,18 @@ from keras.callbacks import EarlyStopping
 from sklearn.cluster import KMeans
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout, Activation, LeakyReLU, ELU
 import random
-import tensorflow as tf
-import argparse
 
 # Constants
 DATASET = 'EMODB'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
-IMAGE_SUBFOLDER = 'CH_ME_MF'
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
 MODEL = 'RESNET'
-MODE = 'UNFREEZE_4CLASS'
+MODE = 'UNFREEZE'
 # ALL CLASSES
+# EMODB
 # EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
+# RAVDESS
+EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 
-# 4 CLASSES
-EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
 BATCH_SIZE = 32
@@ -141,8 +139,15 @@ def load_dataset_and_extract_features(data_dir, feature_model):
     features = []
     labels = []
 
+    # Check if the directory exists before proceeding
+    if not os.path.exists(data_dir):
+        raise FileNotFoundError(f"The specified directory does not exist: {data_dir}")
+
     for emotion in EMOTIONS:
-        emotion_image_path = os.path.join(data_dir, IMAGE_SUBFOLDER, emotion)
+        emotion_image_path = os.path.join(data_dir, emotion)
+        if not os.path.exists(emotion_image_path):
+            raise FileNotFoundError(f"The specified emotion directory does not exist: {emotion_image_path}")
+
         for image_file in os.listdir(emotion_image_path):
             full_image_path = os.path.join(emotion_image_path, image_file)
             feature = load_and_extract_features(full_image_path, feature_model)
@@ -187,78 +192,70 @@ def train_and_evaluate(hyperparams, features, labels, unfreeze=False, layers_to_
 
 
 def main():
+    # List of datasets to process
+    datasets = ["CH_ME_MF", "CH_MF_ME", "MF_CH_ME", "MF_ME_CH", "ME_CH_MF", "ME_MF_CH"]
+
     POPULATION_SIZE = 10
     NUM_GENERATIONS = 20
     NUM_PARENTS = 5
 
-    parser = argparse.ArgumentParser(description="TensorFlow GPU Configuration Example")
-    parser.add_argument('--mode', type=str, default='cpu', choices=['gpu', 'cpu'],
-                        help='Select mode of execution: GPU or CPU')
-    args = parser.parse_args()
-
-    if args.mode == 'gpu':
-        gpus = tf.config.experimental.list_physical_devices('GPU')
-        if gpus:
-            try:
-                for gpu in gpus:
-                    tf.config.experimental.set_memory_growth(gpu, True)
-                print("Running on GPU.")
-            except RuntimeError as e:
-                print(e)
-        else:
-            print("No GPU found, falling back to CPU.")
-    elif args.mode == 'cpu':
-        tf.config.set_visible_devices([], 'GPU')
-        print("Running on CPU mode.")
-
     feature_model = ResNet50(weights='imagenet', include_top=False, input_shape=(*IMAGE_SIZE, 3))
-    features, labels = load_dataset_and_extract_features(DATA_DIR, feature_model)
+    # Loop over each dataset subfolder
+    for dataset in datasets:
+        print(f"Processing dataset: {dataset}")
+        IMAGE_SUBFOLDER = dataset  # Dynamic dataset subfolder
+        data_dir = os.path.join(DATA_DIR, IMAGE_SUBFOLDER)  # Correct the path construction
+        if not os.path.exists(data_dir):
+            print(f"Skipping dataset {dataset} as the directory does not exist: {data_dir}")
+            continue  # Skip this dataset if the directory does not exist
 
-    population = initialize_population(POPULATION_SIZE)
-    best_accuracy = 0
-    best_hyperparams = None
-    best_y_true = None
-    best_y_pred = None
+        features, labels = load_dataset_and_extract_features(data_dir, feature_model)
 
-    for generation in range(NUM_GENERATIONS):
-        print(f"Generation {generation + 1}")
+        population = initialize_population(POPULATION_SIZE)
+        best_accuracy = 0
+        best_hyperparams = None
+        best_y_true = None
+        best_y_pred = None
 
-        generation_accuracies = []
-        for individual in population:
-            accuracy, y_true_labels, y_pred_labels = train_and_evaluate(individual, features, labels,
-                                                                        unfreeze=individual['unfreeze'],
-                                                                        layers_to_unfreeze=individual[
-                                                                            'layers_to_unfreeze'])
-            generation_accuracies.append(accuracy)
+        # Run the genetic algorithm for NUM_GENERATIONS
+        for generation in range(NUM_GENERATIONS):
+            print(f"Generation {generation + 1}")
+            generation_accuracies = []
 
-            if accuracy > best_accuracy:
-                best_accuracy = accuracy
-                best_hyperparams = individual
-                best_y_true = y_true_labels
-                best_y_pred = y_pred_labels
+            for individual in population:
+                accuracy, y_true_labels, y_pred_labels = train_and_evaluate(individual, features, labels)
+                generation_accuracies.append(accuracy)
 
-        # Selection based on accuracy
-        sorted_indices = np.argsort(generation_accuracies)[::-1]
-        top_individuals = [population[i] for i in sorted_indices[:NUM_PARENTS]]
+                if accuracy > best_accuracy:
+                    best_accuracy = accuracy
+                    best_hyperparams = individual
+                    best_y_true = y_true_labels
+                    best_y_pred = y_pred_labels
 
-        # Crossover and mutation to create the next generation
-        next_generation = []
-        for _ in range(POPULATION_SIZE - len(top_individuals)):
-            parent1, parent2 = random.sample(top_individuals, 2)
-            child = crossover(parent1, parent2)
-            child = mutate(child)
-            next_generation.append(child)
+            # Selection based on accuracy
+            sorted_indices = np.argsort(generation_accuracies)[::-1]
+            top_individuals = [population[i] for i in sorted_indices[:NUM_PARENTS]]
 
-        population = top_individuals + next_generation
+            # Crossover and mutation to create the next generation
+            next_generation = []
+            for _ in range(POPULATION_SIZE - len(top_individuals)):
+                parent1, parent2 = random.sample(top_individuals, 2)
+                child = crossover(parent1, parent2)
+                child = mutate(child)
+                next_generation.append(child)
 
-    with open(f"{IMAGE_SUBFOLDER}_{DATASET}_{MODEL}_{MODE}_optimization_results.txt", "w") as output_file:
-        print(f"Optimization completed. Best Accuracy: {best_accuracy}", file=output_file)
-        print(f"Best Hyperparameters: {best_hyperparams}", file=output_file)
+            population = top_individuals + next_generation
 
-        # Print classification report for the best model
-        if best_y_true is not None and best_y_pred is not None:
-            print("Classification Report for the Best Model:", file=output_file)
-            print(classification_report(best_y_true, best_y_pred, target_names=EMOTIONS), file=output_file)
+        # Save results to a file specific to the dataset
+        result_file_path = f"{dataset}_{DATASET}_{MODEL}_{MODE}_optimization_results.txt"
+        with open(result_file_path, "w") as output_file:
+            print(f"Optimization completed for dataset {dataset}. Best Accuracy: {best_accuracy}", file=output_file)
+            print(f"Best Hyperparameters: {best_hyperparams}", file=output_file)
+
+            # Print classification report for the best model
+            if best_y_true is not None and best_y_pred is not None:
+                print("Classification Report for the Best Model:", file=output_file)
+                print(classification_report(best_y_true, best_y_pred, target_names=EMOTIONS), file=output_file)
 
 
 if __name__ == "__main__":

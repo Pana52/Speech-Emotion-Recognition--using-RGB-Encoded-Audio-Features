@@ -1,0 +1,18 @@
+Optimization completed. Best Accuracy: 0.6805555820465088
+Best Hyperparameters: {'learning_rate': 1.1005986132896187e-05, 'batch_size': 32, 'dense_neurons': 64, 'activation': 'relu', 'dropout_rate': 0.2544627599961419, 'n_clusters': 17}
+Classification Report for the Best Model:
+              precision    recall  f1-score   support
+
+       angry       0.88      0.71      0.79        31
+        calm       0.74      0.80      0.77        46
+     disgust       0.60      0.73      0.66        33
+     fearful       0.66      0.58      0.62        43
+       happy       0.67      0.67      0.67        42
+     neutral       0.72      0.65      0.68        20
+         sad       0.49      0.54      0.51        35
+   surprised       0.78      0.74      0.76        38
+
+    accuracy                           0.68       288
+   macro avg       0.69      0.68      0.68       288
+weighted avg       0.69      0.68      0.68       288
+
