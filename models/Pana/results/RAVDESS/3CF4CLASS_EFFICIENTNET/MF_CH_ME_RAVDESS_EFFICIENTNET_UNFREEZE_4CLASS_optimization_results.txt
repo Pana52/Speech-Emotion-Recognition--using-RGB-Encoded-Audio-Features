@@ -1,0 +1,14 @@
+Optimization completed for dataset MF_CH_ME. Best Accuracy: 0.7259259223937988
+Best Hyperparameters: {'learning_rate': 2.441583517590989e-05, 'batch_size': 64, 'dense_neurons': 64, 'activation': 'elu', 'dropout_rate': 0.3595953128596218, 'n_clusters': 11, 'unfreeze': False, 'layers_to_unfreeze': 1}
+Classification Report for the Best Model:
+              precision    recall  f1-score   support
+
+       angry       0.80      0.79      0.80        47
+       happy       0.67      0.67      0.67        39
+     neutral       0.78      0.50      0.61        14
+         sad       0.68      0.80      0.74        35
+
+    accuracy                           0.73       135
+   macro avg       0.73      0.69      0.70       135
+weighted avg       0.73      0.73      0.72       135
+

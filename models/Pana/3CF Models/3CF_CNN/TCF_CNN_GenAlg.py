@@ -10,8 +10,6 @@ from sklearn.metrics import classification_report
 from keras.callbacks import EarlyStopping
 from keras.layers import Dense, Dropout, Activation, LeakyReLU, ELU, Conv2D, MaxPooling2D, Flatten
 import random
-import tensorflow as tf
-import argparse
 
 # Constants
 DATASET = 'RAVDESS'
@@ -165,26 +163,6 @@ def main():
     POPULATION_SIZE = 10
     NUM_GENERATIONS = 20
     NUM_PARENTS = 5
-
-    parser = argparse.ArgumentParser(description="TensorFlow GPU Configuration Example")
-    parser.add_argument('--mode', type=str, default='cpu', choices=['gpu', 'cpu'],
-                        help='Select mode of execution: GPU or CPU')
-    args = parser.parse_args()
-
-    if args.mode == 'gpu':
-        gpus = tf.config.experimental.list_physical_devices('GPU')
-        if gpus:
-            try:
-                for gpu in gpus:
-                    tf.config.experimental.set_memory_growth(gpu, True)
-                print("Running on GPU.")
-            except RuntimeError as e:
-                print(e)
-        else:
-            print("No GPU found, falling back to CPU.")
-    elif args.mode == 'cpu':
-        tf.config.set_visible_devices([], 'GPU')
-        print("Running on CPU mode.")
 
     feature_model = build_feature_extractor()
     features, labels = load_dataset_and_extract_features(DATA_DIR, feature_model)

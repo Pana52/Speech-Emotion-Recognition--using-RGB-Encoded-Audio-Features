@@ -13,26 +13,23 @@ from keras.callbacks import EarlyStopping
 from sklearn.cluster import KMeans
 from keras.layers import Dense, GlobalAveragePooling2D, Dropout, Activation, LeakyReLU, ELU
 import random
-import tensorflow as tf
-import argparse
 
 # Constants
 DATASET = 'RAVDESS'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
-IMAGE_SUBFOLDER = 'MF_ME_CH'
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
 MODEL = 'RESNET'
-MODE = 'FREEZE'
+MODE = 'FREEZE_4CLASS'
 # ALL CLASSES
 # EMODB
 # EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 # RAVDESS
-EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
+# EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
 
 # 4 CLASSES
 # EMODB
 # EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
 # RAVDESS
-# EMOTIONS = ['angry', 'happy', 'neutral', 'sad']
+EMOTIONS = ['angry', 'happy', 'neutral', 'sad']
 
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)

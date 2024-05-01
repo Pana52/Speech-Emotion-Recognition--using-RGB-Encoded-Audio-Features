@@ -15,15 +15,21 @@ from keras.layers import Dense, GlobalAveragePooling2D, Dropout, Activation, Lea
 import random
 
 # Constants
-DATASET = 'EMODB'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
+DATASET = 'RAVDESS'
+DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
 MODEL = 'RESNET'
-MODE = 'UNFREEZE'
+MODE = 'UNFREEZE_4CLASS'
 # ALL CLASSES
 # EMODB
 # EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 # RAVDESS
-EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
+# EMOTIONS = ['angry', 'calm', 'disgust', 'fearful', 'happy', 'neutral', 'sad', 'surprised']
+
+# 4 CLASSES
+# EMODB
+# EMOTIONS = ['anger', 'happiness', 'neutral', 'sadness']
+# RAVDESS
+EMOTIONS = ['angry', 'happy', 'neutral', 'sad']
 
 NUM_CLASSES = len(EMOTIONS)
 IMAGE_SIZE = (256, 256)
@@ -173,7 +179,7 @@ def train_and_evaluate(hyperparams, features, labels, unfreeze=False, layers_to_
     model_input_shape = X_train.shape[1]  # This should capture the correct feature length
 
     # Update model creation to handle new input shape and include unfreezing logic
-    model = build_classification_model(NUM_CLASSES, model_input_shape, hyperparams, unfreeze=unfreeze, layers_to_unfreeze=layers_to_unfreeze)
+    model = build_classification_model(NUM_CLASSES, model_input_shape, hyperparams)
 
     # Set up early stopping to prevent overfitting
     early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, verbose=0, restore_best_weights=True)
@@ -193,7 +199,7 @@ def train_and_evaluate(hyperparams, features, labels, unfreeze=False, layers_to_
 
 def main():
     # List of datasets to process
-    datasets = ["CH_ME_MF", "CH_MF_ME", "MF_CH_ME", "MF_ME_CH", "ME_CH_MF", "ME_MF_CH"]
+    datasets = ["CH_MF_ME", "MF_CH_ME", "MF_ME_CH", "ME_CH_MF", "ME_MF_CH"]
 
     POPULATION_SIZE = 10
     NUM_GENERATIONS = 20
