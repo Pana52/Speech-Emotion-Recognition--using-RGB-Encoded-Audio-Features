@@ -1,2 +1,2 @@
 # Speech-Emotion-Recognition---Audio-Dataset
-A comparative experimentation between different models that can classify emotions from short audio clips.
+Using RGB-Encoded audio features into images for Speech Emotion Recognition.
