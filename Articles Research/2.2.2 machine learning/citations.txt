@@ -1,5 +1,0 @@
-Aouani, H. and Ayed, Y.B., 2020. Speech emotion recognition with deep learning. Procedia Computer Science, 176, pp.251-260.
-
-Lin, Y.L. and Wei, G., 2005, August. Speech emotion recognition based on HMM and SVM. In 2005 international conference on machine learning and cybernetics (Vol. 8, pp. 4898-4901). IEEE.
-
-Anusha, R., Subhashini, P., Jyothi, D., Harshitha, P., Sushma, J. and Mukesh, N., 2021, June. Speech emotion recognition using machine learning. In 2021 5th International Conference on Trends in Electronics and Informatics (ICOEI) (pp. 1608-1612). IEEE.

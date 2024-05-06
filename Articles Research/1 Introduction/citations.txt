@@ -1,0 +1,11 @@
+Wani, T.M., Gunawan, T.S., Qadri, S.A.A., Kartiwi, M. and Ambikairajah, E., 2021. A comprehensive review of speech emotion recognition systems. IEEE access, 9, pp.47795-47814.
+
+Kerkeni, L., Serrestou, Y., Mbarki, M., Raoof, K., Mahjoub, M.A. and Cleder, C., 2019. Automatic speech emotion recognition using machine learning.
+
+Swain, M., Routray, A. and Kabisatpathy, P., 2018. Databases, features and classifiers for speech emotion recognition: a review. International Journal of Speech Technology, 21, pp.93-120.
+
+Schuller, B., Batliner, A., Steidl, S. and Seppi, D., 2011. Recognising realistic emotions and affect in speech: State of the art and lessons learnt from the first challenge. Speech communication, 53(9-10), pp.1062-1087.
+
+Hildebrandt, A., Schacht, A., Sommer, W. and Wilhelm, O., 2012. Measuring the speed of recognising facially expressed emotions. Cognition & emotion, 26(4), pp.650-666.
+
+Williams, D. and Happé, F., 2010. Recognising ‘social’and ‘non-social’emotions in self and others: A study of autism. autism, 14(4), pp.285-304.

@@ -1,0 +1,5 @@
+Latif, S., Rana, R., Khalifa, S., Jurdak, R. and Schuller, B.W., 2020. Deep architecture enhancing robustness to noise, adversarial attacks, and cross-corpus setting for speech emotion recognition. arXiv preprint arXiv:2005.08453.
+
+Ottl, S., Amiriparian, S., Gerczuk, M., Karas, V. and Schuller, B., 2020, October. Group-level speech emotion recognition utilising deep spectrum features. In Proceedings of the 2020 International Conference on Multimodal Interaction (pp. 821-826).
+
+Chakhtouna, A., Sekkate, S. and Adib, A., 2022, October. Speech emotion recognition using pre-trained and fine-tuned transfer learning approaches. In The Proceedings of the International Conference on Smart City Applications (pp. 365-374). Cham: Springer International Publishing.

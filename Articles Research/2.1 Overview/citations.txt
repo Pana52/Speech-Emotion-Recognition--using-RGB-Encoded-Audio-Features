@@ -1,7 +1,0 @@
-Chandrasekar, P., Chapaneri, S. and Jayaswal, D., 2014, April. Automatic speech emotion recognition: A survey. In 2014 international conference on circuits, systems, communication and information technology applications (CSCITA) (pp. 341-346). IEEE.
-
-Wani, T.M., Gunawan, T.S., Qadri, S.A.A., Kartiwi, M. and Ambikairajah, E., 2021. A comprehensive review of speech emotion recognition systems. IEEE access, 9, pp.47795-47814.
-
-Kerkeni, L., Serrestou, Y., Mbarki, M., Raoof, K., Mahjoub, M.A. and Cleder, C., 2019. Automatic speech emotion recognition using machine learning.
-
-Swain, M., Routray, A. and Kabisatpathy, P., 2018. Databases, features and classifiers for speech emotion recognition: a review. International Journal of Speech Technology, 21, pp.93-120.
