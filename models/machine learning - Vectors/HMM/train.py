@@ -32,6 +32,5 @@ def train_model(data_path):
 
 
 if __name__ == "__main__":
-    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                "KV6003BNN01/datasets/SAVEE/"
+    data_path = "PATH"
     train_model(data_path)

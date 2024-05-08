@@ -27,6 +27,5 @@ def train_and_evaluate(data_path):
 
 if __name__ == "__main__":
     # Specify the path to your CREMA-D dataset
-    dataset_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project " \
-                   "KV6003BNN01/datasets/SAVEE/"
+    dataset_path = "PATH"
     train_and_evaluate(dataset_path)

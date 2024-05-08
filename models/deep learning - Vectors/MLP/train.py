@@ -13,7 +13,7 @@ from keras.models import load_model
 
 def main():
     # Define the path to your dataset
-    data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
+    data_path = "PATH"
 
     # Load and preprocess the data
     X_train, X_test, y_train, y_test = load_data(data_path)

@@ -48,7 +48,4 @@ def organize_ravdess_dataset(source_directory, target_base_directory):
 # organize_ravdess_dataset_v2('/path/to/your/ravdess/dataset', '/path/to/target/directory')
 
 
-organize_ravdess_dataset('C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project '
-                         'KV6003BNN01/datasets/original/RAVDESS/', 'C:/Users/Pana/Desktop/Northumbria/Final '
-                                                                   'Year/Individual Computing Project '
-                                                                   'KV6003BNN01/datasets/audio/RAVDESS/')
+organize_ravdess_dataset('PATH', 'PATH')

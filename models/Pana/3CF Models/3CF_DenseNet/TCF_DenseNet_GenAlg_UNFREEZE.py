@@ -15,7 +15,7 @@ from keras.layers import Dense, GlobalAveragePooling2D, Dropout, Activation, Lea
 import random
 # Constants
 DATASET = 'RAVDESS'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF/"
+DATA_DIR = f"PATH"
 MODEL = 'DENSENET'
 MODE = 'UNFREEZE'
 # ALL CLASSES

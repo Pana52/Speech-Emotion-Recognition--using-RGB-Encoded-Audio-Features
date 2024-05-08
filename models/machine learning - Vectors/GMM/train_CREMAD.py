@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 
 # Load dataset
-data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/CREMAD/"
+data_path = "PATH"
 features, labels = load_data(data_path)
 
 # Split dataset into training and testing set

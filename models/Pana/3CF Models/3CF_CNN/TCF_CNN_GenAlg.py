@@ -13,7 +13,7 @@ import random
 
 # Constants
 DATASET = 'RAVDESS'
-DATA_DIR = f"C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/{DATASET}/256p/3CF_4CLASS/"
+DATA_DIR = f"PATH"
 IMAGE_SUBFOLDER = 'MF_CH_ME'
 MODEL = 'CNN'
 MODE = 'CUSTOM_4CLASS'

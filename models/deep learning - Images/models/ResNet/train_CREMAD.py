@@ -113,9 +113,7 @@ def evaluate_model(model, test_generator):
 
 
 def main():
-    dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-                   'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                   'images/datasets/CREMAD/Mel-Spectrograms/MelSpec_256x256/'
+    dataset_path = 'PATH'
 
     split_dataset(dataset_path)
 

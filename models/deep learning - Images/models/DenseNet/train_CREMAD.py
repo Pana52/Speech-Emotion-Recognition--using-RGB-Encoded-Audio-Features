@@ -127,9 +127,7 @@ def compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels,
 
 
 if __name__ == "__main__":
-    dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-                   'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                   'images/datasets/CREMAD/MFCCs/MFCC_128x128/'
+    dataset_path = 'PATH'
     (X_train, X_val, y_train, y_val), class_labels = load_and_preprocess_data(dataset_path)
     model = create_model(input_shape=X_train.shape[1:], num_classes=y_train.shape[1])
     history = compile_and_train_model(model, X_train, y_train, X_val, y_val, class_labels)

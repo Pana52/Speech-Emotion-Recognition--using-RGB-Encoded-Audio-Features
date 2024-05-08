@@ -101,9 +101,7 @@ def build_model(num_classes=NUM_CLASSES):
 
 
 if __name__ == "__main__":
-    dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project ' \
-                   'KV6003BNN01/Speech-Emotion-Recognition---Audio-Dataset/models/deep learning for ' \
-                   'images/datasets/CREMAD/MFCCs/MFCC_256x256/'
+    dataset_path = 'PATH'
     (X_train, X_test, y_train, y_test), target_names = load_and_preprocess_data(dataset_path)
     model = build_model(NUM_CLASSES)
     custom_early_stopping = CustomEarlyStopping(switch_epoch=SWITCH_EPOCH, min_delta=0.001, patience=PATIENCE)

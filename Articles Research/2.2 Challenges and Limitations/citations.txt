@@ -1,0 +1,7 @@
+Sun, L., Fu, S. and Wang, F., 2019. Decision tree SVM model with Fisher feature selection for speech emotion recognition. EURASIP Journal on Audio, Speech, and Music Processing, 2019(1), pp.1-14.
+
+Zhang, S., Liu, R., Tao, X. and Zhao, X., 2021. Deep cross-corpus speech emotion recognition: Recent advances and perspectives. Frontiers in neurorobotics, 15, p.784514.
+
+Elfenbein, H.A. and Ambady, N., 2002. On the universality and cultural specificity of emotion recognition: a meta-analysis. Psychological bulletin, 128(2), p.203.
+
+Lausen, A. and Schacht, A., 2018. Gender differences in the recognition of vocal emotions. Frontiers in psychology, 9, p.359771.

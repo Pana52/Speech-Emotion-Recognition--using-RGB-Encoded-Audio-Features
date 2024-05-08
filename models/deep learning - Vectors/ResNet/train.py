@@ -9,7 +9,7 @@ from model import build_resnet
 import seaborn as sns  # Corrected import statement for seaborn
 
 # Constants
-DATA_PATH = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
+DATA_PATH = "PATH"
 # INPUT_SHAPE = (13, 1)  # MFCC
 INPUT_SHAPE = (128, 1)  # MELSPEC
 NUM_CLASSES = 10  # Number of emotion categories

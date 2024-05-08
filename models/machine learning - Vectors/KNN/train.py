@@ -3,7 +3,7 @@ from model import KNNModel
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 # Assuming the CREMA-D dataset is located in 'data/CREMA-D' directory
-data_path = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/SAVEE/"
+data_path = "PATH"
 
 
 def main():

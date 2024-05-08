@@ -8,8 +8,8 @@ import librosa
 from sklearn.preprocessing import MinMaxScaler
 from scipy.ndimage import zoom
 
-DATASET_AUDIO = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/audio/EMODB/"
-OUTPUT_IMAGES = "C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/Mixed/EMODB/128p/3CF/3cf_random"
+DATASET_AUDIO = "PATH"
+OUTPUT_IMAGES = "PATH"
 # EMODB
 EMOTIONS = ['anger', 'boredom', 'disgust', 'fear', 'happiness', 'neutral', 'sadness']
 # RAVDESS

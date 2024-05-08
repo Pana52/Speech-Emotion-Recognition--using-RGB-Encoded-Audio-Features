@@ -4,7 +4,7 @@ from model import create_gmm_models
 from sklearn.metrics import classification_report
 
 # Path to the dataset
-dataset_path = 'C:/Users/Pana/Desktop/Northumbria/Final Year/Individual Computing Project KV6003BNN01/datasets/EMODB/'
+dataset_path = 'PATH'
 
 # Load the dataset
 X_train, X_test, y_train, y_test = load_data(dataset_path)
